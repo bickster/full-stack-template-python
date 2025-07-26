@@ -1,0 +1,21 @@
+{
+  "name": "fullstack-node-example",
+  "version": "1.0.0",
+  "description": "Node.js script examples for FullStack API",
+  "type": "module",
+  "scripts": {
+    "user-sync": "node user-sync.js",
+    "batch-operations": "node batch-operations.js",
+    "webhook-server": "node webhook-server.js"
+  },
+  "dependencies": {
+    "@fullstack/api-client": "file:../../sdk/typescript",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.0",
+    "node-cron": "^3.0.0",
+    "winston": "^3.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}
