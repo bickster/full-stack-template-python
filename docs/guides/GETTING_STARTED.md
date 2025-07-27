@@ -358,7 +358,8 @@ Now that you're familiar with the basics:
 1. **Explore the API Reference**: See all available endpoints in our [API documentation](/api/docs)
 2. **Check Example Applications**: Learn from real-world implementations
 3. **Read the Security Guide**: Understand how to secure your integration
-4. **Join the Community**: Get help and share your experience
+4. **TypeScript Development**: Follow our [TypeScript Development Guide](TYPESCRIPT_DEVELOPMENT.md) for best practices
+5. **Join the Community**: Get help and share your experience
 
 ## Need Help?
 

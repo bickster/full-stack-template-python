@@ -49,13 +49,13 @@ dev = [
 app = "app.cli.commands:cli"
 
 [tool.black]
-line-length = 88
+line-length = 79
 target-version = ['py311']
 include = '\.pyi?$'
 
 [tool.isort]
 profile = "black"
-line_length = 88
+line_length = 79
 
 [tool.mypy]
 python_version = "3.11"

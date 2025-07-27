@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { message } from 'antd';
-import {
+import type {
   AuthStore,
   LoginRequest,
   RegisterRequest,
@@ -9,7 +9,7 @@ import {
   PasswordChangeRequest,
 } from '../types';
 import { authApi, usersApi } from '../services/api';
-import { AxiosError } from 'axios';
+import type { AxiosError } from 'axios';
 
 const useAuthStore = create<AuthStore>()(
   devtools(

@@ -5,7 +5,8 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useAuthStore from '../stores/authStore';
-import { loginSchema, LoginFormData } from '../utils/validation';
+import { loginSchema } from '../utils/validation';
+import type { LoginFormData } from '../utils/validation';
 
 const { Title, Text } = Typography;
 
@@ -49,9 +50,9 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Title level={2}>Welcome Back</Title>
+      <Card className="w-full max-w-sm" style={{ maxWidth: '360px' }}>
+        <div className="text-center mb-6">
+          <Title level={2} className="mb-2">Welcome Back</Title>
           <Text type="secondary">Sign in to your account</Text>
         </div>
 

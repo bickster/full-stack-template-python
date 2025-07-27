@@ -1,6 +1,6 @@
 """User management endpoints."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request
@@ -15,7 +15,11 @@ from app.api.schemas import (
     UserResponse,
     UserUpdate,
 )
-from app.core.exceptions import AuthenticationError, ConflictError, ValidationError
+from app.core.exceptions import (
+    AuthenticationError,
+    ConflictError,
+    ValidationError,
+)
 from app.core.logging import logger
 from app.core.security import get_password_hash, verify_password
 from app.db.models.user import User
@@ -28,7 +32,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
 async def get_current_user_profile(
     request: Request,
     current_user: Annotated[User, Depends(get_current_user)],
-):
+) -> UserResponse:
     """Get current user profile."""
     # Get API version from request
     version = get_api_version(request)
@@ -43,7 +47,7 @@ async def update_current_user(
     user_update: UserUpdate,
     current_user: Annotated[User, Depends(get_current_verified_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> UserResponse:
     """Update current user profile."""
     update_data = user_update.model_dump(exclude_unset=True)
 
@@ -68,7 +72,10 @@ async def update_current_user(
         current_user.is_verified = False
 
     # Check if username is being updated and already exists
-    if "username" in update_data and update_data["username"] != current_user.username:
+    if (
+        "username" in update_data
+        and update_data["username"] != current_user.username
+    ):
         result = await db.execute(
             select(User).where(
                 User.username == update_data["username"],
@@ -85,7 +92,7 @@ async def update_current_user(
     for field, value in update_data.items():
         setattr(current_user, field, value)
 
-    current_user.updated_at = datetime.utcnow()
+    current_user.updated_at = datetime.now(timezone.utc)
 
     await db.commit()
     await db.refresh(current_user)
@@ -106,7 +113,7 @@ async def change_password(
     password_data: PasswordChangeRequest,
     current_user: Annotated[User, Depends(get_current_verified_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> SuccessResponse:
     """Change current user password."""
     # Verify current password
     if not verify_password(
@@ -125,8 +132,10 @@ async def change_password(
         )
 
     # Update password
-    current_user.hashed_password = get_password_hash(password_data.new_password)
-    current_user.updated_at = datetime.utcnow()
+    current_user.hashed_password = get_password_hash(
+        password_data.new_password
+    )
+    current_user.updated_at = datetime.now(timezone.utc)
 
     await db.commit()
 
@@ -145,10 +154,10 @@ async def change_password(
 async def delete_current_user(
     current_user: Annotated[User, Depends(get_current_verified_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> SuccessResponse:
     """Delete current user account (soft delete)."""
     # Soft delete the user
-    current_user.deleted_at = datetime.utcnow()
+    current_user.deleted_at = datetime.now(timezone.utc)
     current_user.is_active = False
 
     # Revoke all refresh tokens
@@ -163,7 +172,7 @@ async def delete_current_user(
     refresh_tokens = result.scalars().all()
 
     for token in refresh_tokens:
-        token.revoked_at = datetime.utcnow()
+        token.revoked_at = datetime.now(timezone.utc)
 
     await db.commit()
 

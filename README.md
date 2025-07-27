@@ -92,6 +92,19 @@ Access the application:
 - API Docs: http://localhost:8000/docs
 - API Reference: [docs/API_REFERENCE.md](docs/API_REFERENCE.md)
 
+### Development Best Practices
+
+For frontend development with TypeScript:
+```bash
+# Run with concurrent type checking (recommended)
+cd ui && npm run dev:all
+
+# Or run build periodically to catch type errors
+cd ui && npm run build
+```
+
+See [TypeScript Development Guide](docs/guides/TYPESCRIPT_DEVELOPMENT.md) for detailed best practices.
+
 ## Project Structure
 
 ```

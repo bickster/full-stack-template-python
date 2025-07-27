@@ -1,6 +1,6 @@
 """Rate limiting implementation."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from sqlalchemy import and_, func, select
@@ -65,7 +65,9 @@ class LoginRateLimiter:
             tuple: (is_allowed, remaining_attempts, retry_after)
         """
         # Calculate the time window
-        window_start = datetime.utcnow() - timedelta(minutes=self.window_minutes)
+        window_start = datetime.now(timezone.utc) - timedelta(
+            minutes=self.window_minutes
+        )
 
         # Count recent failed login attempts
         result = await db.execute(
@@ -99,7 +101,9 @@ class LoginRateLimiter:
 
             oldest_attempt = oldest_result.scalar()
             if oldest_attempt:
-                retry_after = oldest_attempt + timedelta(minutes=self.window_minutes)
+                retry_after = oldest_attempt + timedelta(
+                    minutes=self.window_minutes
+                )
                 return False, 0, retry_after
 
             return False, 0, None

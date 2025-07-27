@@ -2,14 +2,22 @@
 
 from uuid import uuid4
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Index, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Index,
+    String,
+    func,
+)
 from sqlalchemy.orm import relationship
 
 from app.db.models.base import Base
+from app.db.models.uuid import UUID
 
 
-class LoginAttempt(Base):
+class LoginAttempt(Base):  # type: ignore[misc]  # type: ignore[misc]
     """Login attempt model."""
 
     __tablename__ = "login_attempts"
@@ -17,7 +25,9 @@ class LoginAttempt(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     email = Column(String(255), nullable=False)
     user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
     )
     ip_address = Column(String(45), nullable=False)
     user_agent = Column(String(500), nullable=True)
@@ -41,5 +51,6 @@ class LoginAttempt(Base):
     def __repr__(self) -> str:
         """String representation."""
         return (
-            f"<LoginAttempt {self.email} - {'Success' if self.success else 'Failed'}>"
+            f"<LoginAttempt {self.email} - "
+            f"{'Success' if self.success else 'Failed'}>"
         )

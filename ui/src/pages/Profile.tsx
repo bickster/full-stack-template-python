@@ -7,6 +7,8 @@ import useAuthStore from '../stores/authStore';
 import {
   updateProfileSchema,
   changePasswordSchema,
+} from '../utils/validation';
+import type {
   UpdateProfileFormData,
   ChangePasswordFormData,
 } from '../utils/validation';

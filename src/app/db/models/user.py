@@ -2,14 +2,14 @@
 
 from uuid import uuid4
 
-from sqlalchemy import Boolean, Column, DateTime, String, Index
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Boolean, Column, DateTime, Index, String
 from sqlalchemy.orm import relationship
 
 from app.db.models.base import Base
+from app.db.models.uuid import UUID
 
 
-class User(Base):
+class User(Base):  # type: ignore[misc]  # type: ignore[misc]
     """User model."""
 
     __tablename__ = "users"
@@ -38,7 +38,10 @@ class User(Base):
         lazy="selectin",
     )
     audit_logs = relationship(
-        "AuditLog", back_populates="user", cascade="all, delete-orphan", lazy="selectin"
+        "AuditLog",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="selectin",
     )
 
     # Indexes

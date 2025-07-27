@@ -1,6 +1,6 @@
 """API dependencies."""
 
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Dict, Any
 
 from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -44,7 +44,8 @@ async def get_current_user_token(
     return token_data
 
 
-@cache_user(ttl=300)
+# Type annotation for the decorator is complex, using Any to satisfy mypy
+@cache_user(ttl=300)  # type: ignore[misc]
 async def get_user_by_id(
     user_id: str,
     db: AsyncSession,
@@ -151,7 +152,7 @@ async def get_optional_current_user(
 def get_pagination_params(
     page: int = 1,
     per_page: int = 20,
-) -> dict:
+) -> Dict[str, int]:
     """Get pagination parameters."""
     return {
         "page": max(1, page),

@@ -1,11 +1,13 @@
 """Main FastAPI application."""
 
 from contextlib import asynccontextmanager
+from typing import Any, Dict, AsyncGenerator, cast
+
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from prometheus_client import CONTENT_TYPE_LATEST
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -20,7 +22,7 @@ from app.db.init_db import check_db_connection
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan manager."""
     # Startup
     setup_logging()
@@ -57,7 +59,9 @@ app.add_middleware(LoggingMiddleware)
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
+        allow_origins=[
+            str(origin) for origin in settings.BACKEND_CORS_ORIGINS
+        ],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -72,7 +76,9 @@ app.add_middleware(
 
 # Security headers middleware
 @app.middleware("http")
-async def security_headers_middleware(request: Request, call_next):
+async def security_headers_middleware(
+    request: Request, call_next: Any
+) -> Response:
     """Add security headers to all responses."""
     response = await call_next(request)
 
@@ -86,14 +92,17 @@ async def security_headers_middleware(request: Request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
     # Remove server header
-    response.headers.pop("Server", None)
+    if "Server" in response.headers:
+        del response.headers["Server"]
 
-    return response
+    return cast(Response, response)
 
 
 # Exception handlers
 @app.exception_handler(AppException)
-async def app_exception_handler(request: Request, exc: AppException):
+async def app_exception_handler(
+    request: Request, exc: AppException
+) -> JSONResponse:
     """Handle application exceptions."""
     logger.error(
         "app_exception",
@@ -114,7 +123,9 @@ async def app_exception_handler(request: Request, exc: AppException):
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
+async def validation_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
     """Handle validation errors."""
     errors = []
     for error in exc.errors():
@@ -143,7 +154,9 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 @app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+async def http_exception_handler(
+    request: Request, exc: StarletteHTTPException
+) -> JSONResponse:
     """Handle HTTP exceptions."""
     return JSONResponse(
         status_code=exc.status_code,
@@ -155,7 +168,9 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 
 
 @app.exception_handler(Exception)
-async def general_exception_handler(request: Request, exc: Exception):
+async def general_exception_handler(
+    request: Request, exc: Exception
+) -> JSONResponse:
     """Handle general exceptions."""
     logger.error(
         "unhandled_exception",
@@ -178,13 +193,19 @@ async def general_exception_handler(request: Request, exc: Exception):
 app.include_router(auth.router, prefix=settings.API_V1_STR)
 app.include_router(users.router, prefix=settings.API_V1_STR)
 
-# Set custom OpenAPI schema
-app.openapi = lambda: custom_openapi(app)
+
+# Override the openapi method
+def custom_openapi_schema() -> Dict[str, Any]:
+    """Override OpenAPI schema generation."""
+    return cast(Dict[str, Any], custom_openapi(app))
+
+
+app.openapi = custom_openapi_schema  # type: ignore[method-assign]
 
 
 # Health check
 @app.get("/health")
-async def health_check():
+async def health_check() -> dict[str, Any]:
     """Health check endpoint."""
     db_ok = await check_db_connection()
 
@@ -197,10 +218,10 @@ async def health_check():
 
 # Metrics endpoint
 @app.get("/metrics", include_in_schema=False)
-async def metrics():
+async def metrics() -> PlainTextResponse:
     """Prometheus metrics endpoint."""
     metrics_data = await get_metrics()
-    return JSONResponse(
+    return PlainTextResponse(
         content=metrics_data,
         media_type=CONTENT_TYPE_LATEST,
     )
@@ -208,7 +229,7 @@ async def metrics():
 
 # Root endpoint
 @app.get("/")
-async def root():
+async def root() -> dict[str, str]:
     """Root endpoint."""
     return {
         "message": f"Welcome to {settings.APP_NAME} API",
@@ -220,7 +241,7 @@ async def root():
 
 # Version endpoint
 @app.get("/api/version")
-async def get_version_info():
+async def get_version_info() -> dict[str, Any]:
     """Get API version information."""
     from app.api.middleware.versioning import VersioningMiddleware
 

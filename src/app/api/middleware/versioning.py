@@ -1,7 +1,9 @@
 """API versioning middleware."""
 
-from fastapi import Request, HTTPException
+from typing import Dict, Any
+from fastapi import HTTPException, Request
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 
 from app.core.logging import logger
 
@@ -11,17 +13,19 @@ class VersioningMiddleware(BaseHTTPMiddleware):
 
     SUPPORTED_VERSIONS = ["1.0", "1.1", "1.2"]
     DEFAULT_VERSION = "1.0"
-    DEPRECATED_ENDPOINTS = {
+    DEPRECATED_ENDPOINTS: Dict[str, Dict[str, str]] = {
         # Example deprecated endpoints
         # "/api/v1/users/list": {
         #     "deprecated_date": "2026-01-01",
         #     "sunset_date": "2026-07-01",
         #     "alternative": "/api/v1/users",
-        #     "migration_guide": "https://docs.example.com/migration/users-endpoint"
+        #     "migration_guide": (
+        #         "https://docs.example.com/migration/users-endpoint"
+        #     )
         # }
     }
 
-    async def dispatch(self, request: Request, call_next):
+    async def dispatch(self, request: Request, call_next: Any) -> Response:
         """Process request and add versioning information."""
         # Extract version from header
         header_version = request.headers.get("X-API-Version")
@@ -51,7 +55,10 @@ class VersioningMiddleware(BaseHTTPMiddleware):
             )
             raise HTTPException(
                 status_code=400,
-                detail=f"Unsupported API version: {version}. Supported versions: {', '.join(self.SUPPORTED_VERSIONS)}",
+                detail=(
+                    f"Unsupported API version: {version}. "
+                    f"Supported versions: {', '.join(self.SUPPORTED_VERSIONS)}"
+                ),
             )
 
         # Store version in request state
@@ -66,7 +73,7 @@ class VersioningMiddleware(BaseHTTPMiddleware):
         )
 
         # Process request
-        response = await call_next(request)
+        response: Response = await call_next(request)
 
         # Add version headers to response
         response.headers["X-API-Version"] = version
@@ -77,10 +84,14 @@ class VersioningMiddleware(BaseHTTPMiddleware):
             deprecation = self.DEPRECATED_ENDPOINTS[path]
 
             response.headers["X-API-Deprecated"] = "true"
-            response.headers["X-API-Deprecation-Date"] = deprecation["deprecated_date"]
+            response.headers["X-API-Deprecation-Date"] = deprecation[
+                "deprecated_date"
+            ]
             response.headers["X-API-Sunset-Date"] = deprecation["sunset_date"]
             response.headers["X-API-Alternative"] = deprecation["alternative"]
-            response.headers["X-API-Migration-Guide"] = deprecation["migration_guide"]
+            response.headers["X-API-Migration-Guide"] = deprecation[
+                "migration_guide"
+            ]
 
             # Log deprecation usage
             logger.warning(
@@ -100,7 +111,9 @@ class VersioningMiddleware(BaseHTTPMiddleware):
 
 def get_api_version(request: Request) -> str:
     """Get API version from request state."""
-    return getattr(request.state, "api_version", VersioningMiddleware.DEFAULT_VERSION)
+    return getattr(
+        request.state, "api_version", VersioningMiddleware.DEFAULT_VERSION
+    )
 
 
 def version_greater_equal(version: str, target: str) -> bool:

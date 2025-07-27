@@ -99,6 +99,13 @@ Key tables for authentication:
 - **Backend**: pytest with async support and fixtures
 - **Frontend**: Jest/Vitest for component and store testing
 
+## TypeScript Development Best Practices
+- **Always run `npm run build` periodically** (every 30-60 minutes) during development
+- **Use `npm run dev:all`** for concurrent type checking during active development
+- **Run `npm run check-all` before committing** to catch type errors, lint issues, and test failures
+- **Fix type errors immediately** rather than accumulating them
+- See [TypeScript Development Guide](guides/TYPESCRIPT_DEVELOPMENT.md) for details
+
 ## Security Considerations
 - **Password Requirements**: 8+ chars with complexity rules, bcrypt (12 rounds)
 - **Token Security**: Short-lived access tokens, secure refresh token storage

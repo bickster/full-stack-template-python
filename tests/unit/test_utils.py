@@ -1,7 +1,5 @@
 """Unit tests for utility functions."""
 
-import pytest
-
 from app.core.utils import (
     clean_dict,
     generate_slug,
@@ -49,26 +47,36 @@ class TestValidation:
     def test_validate_password_invalid(self):
         """Test invalid passwords."""
         test_cases = [
-            ("short", [
-                "Password must be at least 8 characters long",
-                "Password must contain at least one uppercase letter", 
-                "Password must contain at least one number"
-            ]),
-            ("alllowercase", [
-                "Password must be at least 8 characters long",
-                "Password must contain at least one uppercase letter",
-                "Password must contain at least one number",
-            ]),
-            ("ALLUPPERCASE", [
-                "Password must be at least 8 characters long",
-                "Password must contain at least one lowercase letter",
-                "Password must contain at least one number",
-            ]),
-            ("NoNumbers!", [
-                "Password must contain at least one number",
-            ]),
+            (
+                "short",
+                [
+                    "Password must be at least 8 characters long",
+                    "Password must contain at least one uppercase letter",
+                    "Password must contain at least one number",
+                ],
+            ),
+            (
+                "alllowercase",
+                [
+                    "Password must contain at least one uppercase letter",
+                    "Password must contain at least one number",
+                ],
+            ),
+            (
+                "ALLUPPERCASE",
+                [
+                    "Password must contain at least one lowercase letter",
+                    "Password must contain at least one number",
+                ],
+            ),
+            (
+                "NoNumbers!",
+                [
+                    "Password must contain at least one number",
+                ],
+            ),
         ]
-        
+
         for password, expected_errors in test_cases:
             valid, errors = validate_password(password)
             assert valid is False
@@ -92,10 +100,18 @@ class TestValidation:
         test_cases = [
             ("ab", "Username must be at least 3 characters long"),
             ("a" * 51, "Username must be at most 50 characters long"),
-            ("user@name", "Username can only contain letters, numbers, underscores, and hyphens"),
-            ("user name", "Username can only contain letters, numbers, underscores, and hyphens"),
+            (
+                "user@name",
+                "Username can only contain letters, numbers, "
+                "underscores, and hyphens",
+            ),
+            (
+                "user name",
+                "Username can only contain letters, numbers, "
+                "underscores, and hyphens",
+            ),
         ]
-        
+
         for username, expected_error in test_cases:
             valid, error = validate_username(username)
             assert valid is False
@@ -124,9 +140,9 @@ class TestUtilityFunctions:
             ("a@example.com", "a*@example.com"),
             ("ab@example.com", "a*@example.com"),
             ("abc@example.com", "a*c@example.com"),
-            ("longusername@example.com", "lo*******me@example.com"),
+            ("longusername@example.com", "lo********me@example.com"),
         ]
-        
+
         for email, expected in test_cases:
             assert mask_email(email) == expected
 
@@ -143,7 +159,7 @@ class TestUtilityFunctions:
             ("Numbers123Test", "numbers123test"),
             ("--Leading-Trailing--", "leading-trailing"),
         ]
-        
+
         for text, expected in test_cases:
             assert generate_slug(text) == expected
 
@@ -153,15 +169,15 @@ class TestPagination:
 
     class MockQuery:
         """Mock query object for testing."""
-        
+
         def __init__(self):
             self.limit_value = None
             self.offset_value = None
-        
+
         def limit(self, value):
             self.limit_value = value
             return self
-        
+
         def offset(self, value):
             self.offset_value = value
             return self
@@ -170,7 +186,7 @@ class TestPagination:
         """Test pagination with default values."""
         query = self.MockQuery()
         result, info = paginate_query(query)
-        
+
         assert query.limit_value == 20
         assert query.offset_value == 0
         assert info == {"page": 1, "per_page": 20, "offset": 0}
@@ -179,7 +195,7 @@ class TestPagination:
         """Test pagination with custom values."""
         query = self.MockQuery()
         result, info = paginate_query(query, page=3, per_page=50)
-        
+
         assert query.limit_value == 50
         assert query.offset_value == 100
         assert info == {"page": 3, "per_page": 50, "offset": 100}
@@ -188,7 +204,7 @@ class TestPagination:
         """Test pagination respects max per page."""
         query = self.MockQuery()
         result, info = paginate_query(query, page=1, per_page=200)
-        
+
         assert query.limit_value == 100  # Max is 100
         assert query.offset_value == 0
         assert info == {"page": 1, "per_page": 100, "offset": 0}
@@ -197,7 +213,7 @@ class TestPagination:
         """Test pagination handles negative values."""
         query = self.MockQuery()
         result, info = paginate_query(query, page=-1, per_page=-10)
-        
+
         assert query.limit_value == 1  # Min is 1
         assert query.offset_value == 0
         assert info == {"page": 1, "per_page": 1, "offset": 0}

@@ -1,19 +1,20 @@
 """Global test configuration and fixtures."""
 
 import asyncio
-from datetime import datetime
 from typing import AsyncGenerator, Dict, Generator
 
 import pytest
 import pytest_asyncio
 from faker import Faker
-from httpx import AsyncClient
-from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 from sqlalchemy.pool import StaticPool
 
 from app.api.main import app
-from app.core.config import settings
 from app.core.security import get_password_hash
 from app.db.models.base import Base
 from app.db.models.user import User
@@ -31,7 +32,7 @@ def event_loop() -> Generator:
 
 
 @pytest_asyncio.fixture
-async def async_session() -> AsyncGenerator[AsyncSession, None]:
+async def db_session() -> AsyncGenerator[AsyncSession, None]:
     """Create an async session for testing."""
     # Create an in-memory SQLite database
     engine = create_async_engine(
@@ -39,36 +40,40 @@ async def async_session() -> AsyncGenerator[AsyncSession, None]:
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
-    
+
     # Create tables
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     # Create session
     async_session_maker = async_sessionmaker(
         engine, class_=AsyncSession, expire_on_commit=False
     )
-    
+
     async with async_session_maker() as session:
         yield session
         await session.rollback()
-    
+
     # Clean up
     await engine.dispose()
 
 
 @pytest_asyncio.fixture
-async def client(async_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
+async def client(
+    db_session: AsyncSession,
+) -> AsyncGenerator[AsyncClient, None]:
     """Create a test client."""
-    
+
     async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
-        yield async_session
-    
+        yield db_session
+
     app.dependency_overrides[get_db] = override_get_db
-    
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         yield ac
-    
+
     app.dependency_overrides.clear()
 
 
@@ -83,7 +88,7 @@ def user_data() -> Dict[str, str]:
 
 
 @pytest_asyncio.fixture
-async def test_user(async_session: AsyncSession) -> User:
+async def test_user(db_session: AsyncSession) -> User:
     """Create a test user."""
     user = User(
         email="test@example.com",
@@ -93,14 +98,14 @@ async def test_user(async_session: AsyncSession) -> User:
         is_verified=True,
         is_superuser=False,
     )
-    async_session.add(user)
-    await async_session.commit()
-    await async_session.refresh(user)
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
     return user
 
 
 @pytest_asyncio.fixture
-async def test_superuser(async_session: AsyncSession) -> User:
+async def test_superuser(db_session: AsyncSession) -> User:
     """Create a test superuser."""
     user = User(
         email="admin@example.com",
@@ -110,9 +115,9 @@ async def test_superuser(async_session: AsyncSession) -> User:
         is_verified=True,
         is_superuser=True,
     )
-    async_session.add(user)
-    await async_session.commit()
-    await async_session.refresh(user)
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
     return user
 
 
@@ -120,7 +125,7 @@ async def test_superuser(async_session: AsyncSession) -> User:
 def auth_headers(test_user: User) -> Dict[str, str]:
     """Create authentication headers."""
     from app.core.security import create_access_token
-    
+
     token = create_access_token(subject=str(test_user.id))
     return {"Authorization": f"Bearer {token}"}
 
@@ -129,6 +134,6 @@ def auth_headers(test_user: User) -> Dict[str, str]:
 def superuser_auth_headers(test_superuser: User) -> Dict[str, str]:
     """Create superuser authentication headers."""
     from app.core.security import create_access_token
-    
+
     token = create_access_token(subject=str(test_superuser.id))
     return {"Authorization": f"Bearer {token}"}

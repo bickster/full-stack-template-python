@@ -53,7 +53,9 @@ class EmailService:
             bool: True if email was sent successfully
         """
         if not all([self.smtp_host, self.smtp_user, self.smtp_password]):
-            logger.warning("email_not_configured", to_email=to_email, subject=subject)
+            logger.warning(
+                "email_not_configured", to_email=to_email, subject=subject
+            )
             return False
 
         try:
@@ -113,7 +115,9 @@ class EmailService:
         Returns:
             bool: True if email was sent successfully
         """
-        reset_url = f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
+        reset_url = (
+            f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
+        )
 
         # Render email template
         template = self.template_env.get_template("password_reset.html")
@@ -178,7 +182,8 @@ Thank you for creating an account with us.
 You can now log in to your account at:
 {settings.FRONTEND_URL}/login
 
-If you have any questions or need assistance, please don't hesitate to contact us.
+If you have any questions or need assistance, please don't hesitate to \
+contact us.
 
 Best regards,
 {settings.APP_NAME} Team
@@ -223,7 +228,8 @@ Best regards,
         text_content = f"""
 Hello {username},
 
-Please verify your email address to complete your registration with {settings.APP_NAME}.
+Please verify your email address to complete your registration with \
+{settings.APP_NAME}.
 
 Click the link below to verify your email:
 {verification_url}

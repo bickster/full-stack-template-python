@@ -1,6 +1,6 @@
 """OpenAPI documentation configuration."""
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
@@ -104,7 +104,10 @@ The API is versioned through the URL path. Current version: v1
     openapi_schema["components"]["examples"] = {
         "LoginExample": {
             "summary": "Example login request",
-            "value": {"username": "john_doe", "password": "SecurePassword123!"},
+            "value": {
+                "username": "john_doe",
+                "password": "SecurePassword123!",
+            },
         },
         "RegisterExample": {
             "summary": "Example registration request",

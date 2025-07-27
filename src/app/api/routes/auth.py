@@ -1,6 +1,6 @@
 """Authentication endpoints."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request, status
@@ -43,16 +43,20 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @router.post(
-    "/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED
+    "/register",
+    response_model=RegisterResponse,
+    status_code=status.HTTP_201_CREATED,
 )
 async def register(
     request: Request,
     register_data: RegisterRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> RegisterResponse:
     """Register a new user."""
     # Check if email already exists
-    result = await db.execute(select(User).where(User.email == register_data.email))
+    result = await db.execute(
+        select(User).where(User.email == register_data.email)
+    )
     if result.scalar_one_or_none():
         raise ConflictError(
             message="Email already registered",
@@ -101,7 +105,7 @@ async def login(
     request: Request,
     login_data: LoginRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> LoginResponse:
     """Login user and return access/refresh tokens."""
     ip_address = get_client_ip(request)
     user_agent = get_user_agent(request)
@@ -120,7 +124,9 @@ async def login(
         raise RateLimitError(
             message="Too many login attempts. Please try again later.",
             details={
-                "retry_after": retry_after.isoformat() if retry_after else None,
+                "retry_after": (
+                    retry_after.isoformat() if retry_after else None
+                ),
             },
         )
 
@@ -134,7 +140,9 @@ async def login(
     user = result.scalar_one_or_none()
 
     # Verify user and password
-    if not user or not verify_password(login_data.password, user.hashed_password):
+    if not user or not verify_password(
+        login_data.password, user.hashed_password
+    ):
         # Record failed attempt
         await login_rate_limiter.record_login_attempt(
             db, login_data.email, ip_address, False, user_agent=user_agent
@@ -160,7 +168,7 @@ async def login(
     record_login_attempt(success=True)
 
     # Update last login
-    user.last_login_at = datetime.utcnow()
+    user.last_login_at = datetime.now(timezone.utc)
 
     # Create tokens
     access_token = create_access_token(subject=str(user.id))
@@ -170,7 +178,7 @@ async def login(
     refresh_token_obj = RefreshToken(
         user_id=user.id,
         token_hash=get_password_hash(refresh_token),
-        expires_at=datetime.utcnow()
+        expires_at=datetime.now(timezone.utc)
         + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
     )
     db.add(refresh_token_obj)
@@ -202,7 +210,7 @@ async def login(
 async def refresh_token(
     refresh_data: RefreshTokenRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> RefreshTokenResponse:
     """Refresh access token using refresh token."""
     try:
         # Decode refresh token
@@ -282,7 +290,7 @@ async def logout(
     request: Request,
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> SuccessResponse:
     """Logout user by revoking refresh tokens."""
     # Revoke all refresh tokens for this user
     result = await db.execute(
@@ -294,7 +302,7 @@ async def logout(
     refresh_tokens = result.scalars().all()
 
     for token in refresh_tokens:
-        token.revoked_at = datetime.utcnow()
+        token.revoked_at = datetime.now(timezone.utc)
 
     await db.commit()
 

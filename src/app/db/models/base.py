@@ -13,7 +13,7 @@ class Base(DeclarativeBase):
     id: Any
 
     # Generate __tablename__ automatically
-    @declared_attr  # type: ignore[misc]
+    @declared_attr.directive
     def __tablename__(cls) -> str:
         """Generate table name from class name."""
         return cls.__name__.lower()

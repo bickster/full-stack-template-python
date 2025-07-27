@@ -10,10 +10,14 @@ from structlog.types import EventDict, Processor
 from app.core.config import settings
 
 
-def add_app_context(logger: Any, method_name: str, event_dict: EventDict) -> EventDict:
+def add_app_context(
+    logger: Any, method_name: str, event_dict: EventDict
+) -> EventDict:
     """Add application context to log entries."""
     event_dict["app_name"] = settings.APP_NAME
-    event_dict["environment"] = "development" if settings.DEBUG else "production"
+    event_dict["environment"] = (
+        "development" if settings.DEBUG else "production"
+    )
     return event_dict
 
 
@@ -98,7 +102,9 @@ class LoggingMiddleware:
         await self.app(scope, receive, send)
 
 
-def log_error(error: Exception, context: Optional[Dict[str, Any]] = None) -> None:
+def log_error(
+    error: Exception, context: Optional[Dict[str, Any]] = None
+) -> None:
     """Log an error with context."""
     logger.error(
         "error_occurred",

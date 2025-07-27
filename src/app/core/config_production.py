@@ -6,7 +6,7 @@ from typing import List
 from app.core.config import Settings
 
 
-class ProductionSettings(Settings):
+class ProductionSettings(Settings):  # type: ignore[misc]
     """Production configuration settings."""
 
     # Override defaults for production
@@ -27,7 +27,9 @@ class ProductionSettings(Settings):
     def FRONTEND_URL(self) -> str:
         """Ensure HTTPS for frontend URL."""
         url = str(super().FRONTEND_URL)
-        if url.startswith("http://") and not url.startswith("http://localhost"):
+        if url.startswith("http://") and not url.startswith(
+            "http://localhost"
+        ):
             return url.replace("http://", "https://")
         return str(url)
 

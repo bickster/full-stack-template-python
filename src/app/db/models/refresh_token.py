@@ -1,23 +1,25 @@
 """Refresh token database model."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import uuid4
 
-from sqlalchemy import Column, DateTime, ForeignKey, String, Index
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, DateTime, ForeignKey, Index, String
 from sqlalchemy.orm import relationship
 
 from app.db.models.base import Base
+from app.db.models.uuid import UUID
 
 
-class RefreshToken(Base):
+class RefreshToken(Base):  # type: ignore[misc]  # type: ignore[misc]
     """Refresh token model."""
 
     __tablename__ = "refresh_tokens"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
     )
     token_hash = Column(String(255), unique=True, nullable=False, index=True)
     expires_at = Column(DateTime(timezone=True), nullable=False)
@@ -40,7 +42,7 @@ class RefreshToken(Base):
     @property
     def is_expired(self) -> bool:
         """Check if token is expired."""
-        return datetime.utcnow() > self.expires_at
+        return bool(datetime.now(timezone.utc) > self.expires_at)
 
     @property
     def is_revoked(self) -> bool:

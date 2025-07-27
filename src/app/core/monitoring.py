@@ -1,6 +1,6 @@
 """Monitoring and metrics."""
 
-from typing import Optional, Any
+from typing import Any, Optional
 
 from prometheus_client import Counter, Gauge, Histogram, generate_latest
 

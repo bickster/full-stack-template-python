@@ -48,14 +48,17 @@ def validate_username(username: str) -> tuple[bool, Optional[str]]:
     if not re.match(r"^[a-zA-Z0-9_-]+$", username):
         return (
             False,
-            "Username can only contain letters, numbers, underscores, and hyphens",
+            "Username can only contain letters, numbers, underscores, "
+            "and hyphens",
         )
 
     return True, None
 
 
 def clean_dict(
-    data: Dict[str, Any], exclude_none: bool = True, exclude_empty: bool = False
+    data: Dict[str, Any],
+    exclude_none: bool = True,
+    exclude_empty: bool = False,
 ) -> Dict[str, Any]:
     """Clean dictionary by removing None or empty values."""
     cleaned = {}

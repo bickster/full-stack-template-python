@@ -5,7 +5,8 @@ import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useAuthStore from '../stores/authStore';
-import { registerSchema, RegisterFormData } from '../utils/validation';
+import { registerSchema } from '../utils/validation';
+import type { RegisterFormData } from '../utils/validation';
 
 const { Title, Text } = Typography;
 
@@ -53,9 +54,9 @@ const Register: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Title level={2}>Create Account</Title>
+      <Card className="w-full max-w-sm" style={{ maxWidth: '360px' }}>
+        <div className="text-center mb-6">
+          <Title level={2} className="mb-2">Create Account</Title>
           <Text type="secondary">Sign up for a new account</Text>
         </div>
 

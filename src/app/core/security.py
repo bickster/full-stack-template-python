@@ -1,6 +1,6 @@
 """Security utilities."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional, Union
 
 from jose import JWTError, jwt
@@ -9,7 +9,9 @@ from passlib.context import CryptContext
 from app.core.config import settings
 
 # Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
+pwd_context = CryptContext(
+    schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12
+)
 
 
 def create_access_token(
@@ -17,9 +19,9 @@ def create_access_token(
 ) -> str:
     """Create JWT access token."""
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(
+        expire = datetime.now(timezone.utc) + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
 
@@ -27,7 +29,7 @@ def create_access_token(
         "exp": expire,
         "sub": str(subject),
         "type": "access",
-        "iat": datetime.utcnow(),
+        "iat": datetime.now(timezone.utc),
     }
 
     encoded_jwt = jwt.encode(
@@ -41,15 +43,17 @@ def create_refresh_token(
 ) -> str:
     """Create JWT refresh token."""
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+        expire = datetime.now(timezone.utc) + timedelta(
+            days=settings.REFRESH_TOKEN_EXPIRE_DAYS
+        )
 
     to_encode = {
         "exp": expire,
         "sub": str(subject),
         "type": "refresh",
-        "iat": datetime.utcnow(),
+        "iat": datetime.now(timezone.utc),
     }
 
     encoded_jwt = jwt.encode(
