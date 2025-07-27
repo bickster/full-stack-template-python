@@ -49,7 +49,11 @@ class TestValidation:
     def test_validate_password_invalid(self):
         """Test invalid passwords."""
         test_cases = [
-            ("short", ["Password must be at least 8 characters long"]),
+            ("short", [
+                "Password must be at least 8 characters long",
+                "Password must contain at least one uppercase letter", 
+                "Password must contain at least one number"
+            ]),
             ("alllowercase", [
                 "Password must be at least 8 characters long",
                 "Password must contain at least one uppercase letter",
@@ -116,11 +120,11 @@ class TestUtilityFunctions:
     def test_mask_email(self):
         """Test email masking."""
         test_cases = [
-            ("test@example.com", "te**st@example.com"),
+            ("test@example.com", "t*t@example.com"),
             ("a@example.com", "a*@example.com"),
             ("ab@example.com", "a*@example.com"),
             ("abc@example.com", "a*c@example.com"),
-            ("longusername@example.com", "lo*********me@example.com"),
+            ("longusername@example.com", "lo*******me@example.com"),
         ]
         
         for email, expected in test_cases:

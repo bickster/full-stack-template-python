@@ -12,7 +12,7 @@ def custom_openapi(app: FastAPI) -> Dict[str, Any]:
     """Generate custom OpenAPI schema."""
     if app.openapi_schema:
         return app.openapi_schema
-    
+
     openapi_schema = get_openapi(
         title=settings.APP_NAME,
         version="1.0.0",
@@ -89,7 +89,7 @@ The API is versioned through the URL path. Current version: v1
             "url": "https://opensource.org/licenses/MIT",
         },
     )
-    
+
     # Add security schemes
     openapi_schema["components"]["securitySchemes"] = {
         "BearerAuth": {
@@ -99,15 +99,12 @@ The API is versioned through the URL path. Current version: v1
             "description": "JWT token authentication",
         }
     }
-    
+
     # Add example schemas
     openapi_schema["components"]["examples"] = {
         "LoginExample": {
             "summary": "Example login request",
-            "value": {
-                "username": "john_doe",
-                "password": "SecurePassword123!"
-            }
+            "value": {"username": "john_doe", "password": "SecurePassword123!"},
         },
         "RegisterExample": {
             "summary": "Example registration request",
@@ -115,19 +112,19 @@ The API is versioned through the URL path. Current version: v1
                 "email": "john@example.com",
                 "username": "john_doe",
                 "password": "SecurePassword123!",
-                "full_name": "John Doe"
-            }
+                "full_name": "John Doe",
+            },
         },
         "TokenExample": {
             "summary": "Example token response",
             "value": {
                 "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
                 "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                "token_type": "bearer"
-            }
-        }
+                "token_type": "bearer",
+            },
+        },
     }
-    
+
     # Add common responses
     openapi_schema["components"]["responses"] = {
         "UnauthorizedError": {
@@ -139,14 +136,14 @@ The API is versioned through the URL path. Current version: v1
                         "properties": {
                             "error": {"type": "string"},
                             "code": {"type": "string"},
-                        }
+                        },
                     },
                     "example": {
                         "error": "Invalid credentials",
-                        "code": "INVALID_CREDENTIALS"
-                    }
+                        "code": "INVALID_CREDENTIALS",
+                    },
                 }
-            }
+            },
         },
         "ValidationError": {
             "description": "Validation error",
@@ -167,16 +164,16 @@ The API is versioned through the URL path. Current version: v1
                                             "properties": {
                                                 "field": {"type": "string"},
                                                 "message": {"type": "string"},
-                                                "type": {"type": "string"}
-                                            }
-                                        }
+                                                "type": {"type": "string"},
+                                            },
+                                        },
                                     }
-                                }
-                            }
-                        }
+                                },
+                            },
+                        },
                     }
                 }
-            }
+            },
         },
         "RateLimitError": {
             "description": "Rate limit exceeded",
@@ -187,18 +184,18 @@ The API is versioned through the URL path. Current version: v1
                         "properties": {
                             "error": {"type": "string"},
                             "code": {"type": "string"},
-                            "retry_after": {"type": "integer"}
-                        }
+                            "retry_after": {"type": "integer"},
+                        },
                     },
                     "example": {
                         "error": "Too many login attempts",
                         "code": "RATE_LIMIT_EXCEEDED",
-                        "retry_after": 900
-                    }
+                        "retry_after": 900,
+                    },
                 }
-            }
-        }
+            },
+        },
     }
-    
+
     app.openapi_schema = openapi_schema
     return app.openapi_schema

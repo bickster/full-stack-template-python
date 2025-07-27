@@ -2,7 +2,7 @@
 
 from typing import Annotated, Optional
 
-from fastapi import Depends, HTTPException, Request, status
+from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
 from sqlalchemy import select
@@ -10,7 +10,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.schemas import TokenPayload
 from app.core.cache import cache_user
-from app.core.config import settings
 from app.core.exceptions import AuthenticationError, AuthorizationError
 from app.core.security import decode_token
 from app.db.models.user import User
@@ -25,23 +24,23 @@ async def get_current_user_token(
 ) -> TokenPayload:
     """Get current user from JWT token."""
     token = credentials.credentials
-    
+
     try:
         payload = decode_token(token)
         token_data = TokenPayload(**payload)
-    except (JWTError, ValueError) as e:
+    except (JWTError, ValueError):
         raise AuthenticationError(
             message="Invalid authentication credentials",
             code="INVALID_TOKEN",
         )
-    
+
     # Check token type
     if token_data.type != "access":
         raise AuthenticationError(
             message="Invalid token type",
             code="INVALID_TOKEN_TYPE",
         )
-    
+
     return token_data
 
 
@@ -66,19 +65,19 @@ async def get_current_user(
 ) -> User:
     """Get current authenticated user."""
     user = await get_user_by_id(token_data.sub, db)
-    
+
     if not user:
         raise AuthenticationError(
             message="User not found",
             code="USER_NOT_FOUND",
         )
-    
+
     if not user.is_active:
         raise AuthenticationError(
             message="User is inactive",
             code="USER_INACTIVE",
         )
-    
+
     return user
 
 
@@ -127,24 +126,24 @@ async def get_optional_current_user(
     authorization = request.headers.get("Authorization")
     if not authorization:
         return None
-    
+
     try:
         scheme, token = authorization.split(" ")
         if scheme.lower() != "bearer":
             return None
-        
+
         payload = decode_token(token)
         token_data = TokenPayload(**payload)
-        
+
         if token_data.type != "access":
             return None
-        
+
         user = await get_user_by_id(token_data.sub, db)
         if user and user.is_active:
             return user
     except Exception:
         pass
-    
+
     return None
 
 

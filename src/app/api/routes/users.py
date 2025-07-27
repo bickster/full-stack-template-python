@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -32,7 +32,7 @@ async def get_current_user_profile(
     """Get current user profile."""
     # Get API version from request
     version = get_api_version(request)
-    
+
     # Return versioned response
     return UserResponse.from_orm_versioned(current_user, version)
 
@@ -46,10 +46,10 @@ async def update_current_user(
 ):
     """Update current user profile."""
     update_data = user_update.model_dump(exclude_unset=True)
-    
+
     if not update_data:
         return UserResponse.model_validate(current_user)
-    
+
     # Check if email is being updated and already exists
     if "email" in update_data and update_data["email"] != current_user.email:
         result = await db.execute(
@@ -63,10 +63,10 @@ async def update_current_user(
                 message="Email already registered",
                 code="EMAIL_EXISTS",
             )
-        
+
         # Mark email as unverified when changed
         current_user.is_verified = False
-    
+
     # Check if username is being updated and already exists
     if "username" in update_data and update_data["username"] != current_user.username:
         result = await db.execute(
@@ -80,22 +80,22 @@ async def update_current_user(
                 message="Username already taken",
                 code="USERNAME_EXISTS",
             )
-    
+
     # Update user fields
     for field, value in update_data.items():
         setattr(current_user, field, value)
-    
+
     current_user.updated_at = datetime.utcnow()
-    
+
     await db.commit()
     await db.refresh(current_user)
-    
+
     logger.info(
         "user_updated",
         user_id=str(current_user.id),
         updated_fields=list(update_data.keys()),
     )
-    
+
     # Get API version and return versioned response
     version = get_api_version(request)
     return UserResponse.from_orm_versioned(current_user, version)
@@ -109,31 +109,33 @@ async def change_password(
 ):
     """Change current user password."""
     # Verify current password
-    if not verify_password(password_data.current_password, current_user.hashed_password):
+    if not verify_password(
+        password_data.current_password, current_user.hashed_password
+    ):
         raise AuthenticationError(
             message="Current password is incorrect",
             code="INVALID_PASSWORD",
         )
-    
+
     # Check if new password is different
     if password_data.current_password == password_data.new_password:
         raise ValidationError(
             message="New password must be different from current password",
             code="SAME_PASSWORD",
         )
-    
+
     # Update password
     current_user.hashed_password = get_password_hash(password_data.new_password)
     current_user.updated_at = datetime.utcnow()
-    
+
     await db.commit()
-    
+
     logger.info(
         "password_changed",
         user_id=str(current_user.id),
         email=current_user.email,
     )
-    
+
     return SuccessResponse(
         message="Password changed successfully",
     )
@@ -148,10 +150,10 @@ async def delete_current_user(
     # Soft delete the user
     current_user.deleted_at = datetime.utcnow()
     current_user.is_active = False
-    
+
     # Revoke all refresh tokens
     from app.db.models.refresh_token import RefreshToken
-    
+
     result = await db.execute(
         select(RefreshToken).where(
             RefreshToken.user_id == current_user.id,
@@ -159,18 +161,18 @@ async def delete_current_user(
         )
     )
     refresh_tokens = result.scalars().all()
-    
+
     for token in refresh_tokens:
         token.revoked_at = datetime.utcnow()
-    
+
     await db.commit()
-    
+
     logger.info(
         "user_deleted",
         user_id=str(current_user.id),
         email=current_user.email,
     )
-    
+
     return SuccessResponse(
         message="User account deleted successfully",
     )

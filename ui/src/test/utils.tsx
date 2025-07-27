@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
@@ -29,8 +30,17 @@ const customRender = (
   };
 };
 
-// Re-export everything
-export * from '@testing-library/react';
+// Export specific functions from testing library
+export {
+  screen,
+  waitFor,
+  fireEvent,
+  within,
+  cleanup,
+  act,
+} from '@testing-library/react';
+
+// Export custom render
 export { customRender as render };
 
 // Test data

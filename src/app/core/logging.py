@@ -2,7 +2,7 @@
 
 import logging
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import structlog
 from structlog.types import EventDict, Processor
@@ -17,7 +17,9 @@ def add_app_context(logger: Any, method_name: str, event_dict: EventDict) -> Eve
     return event_dict
 
 
-def drop_color_message_key(logger: Any, method_name: str, event_dict: EventDict) -> EventDict:
+def drop_color_message_key(
+    logger: Any, method_name: str, event_dict: EventDict
+) -> EventDict:
     """Remove color message key for production."""
     event_dict.pop("color_message", None)
     return event_dict
@@ -25,14 +27,14 @@ def drop_color_message_key(logger: Any, method_name: str, event_dict: EventDict)
 
 def setup_logging() -> None:
     """Configure structured logging for the application."""
-    
+
     # Configure standard logging
     logging.basicConfig(
         format="%(message)s",
         stream=sys.stdout,
         level=logging.DEBUG if settings.DEBUG else logging.INFO,
     )
-    
+
     # Configure structlog
     processors: list[Processor] = [
         structlog.contextvars.merge_contextvars,
@@ -46,20 +48,24 @@ def setup_logging() -> None:
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
     ]
-    
+
     if settings.DEBUG:
         # Development processors
-        processors.extend([
-            structlog.dev.ConsoleRenderer(colors=True),
-        ])
+        processors.extend(
+            [
+                structlog.dev.ConsoleRenderer(colors=True),
+            ]
+        )
     else:
         # Production processors
-        processors.extend([
-            drop_color_message_key,
-            structlog.processors.dict_tracebacks,
-            structlog.processors.JSONRenderer(),
-        ])
-    
+        processors.extend(
+            [
+                drop_color_message_key,
+                structlog.processors.dict_tracebacks,
+                structlog.processors.JSONRenderer(),
+            ]
+        )
+
     structlog.configure(
         processors=processors,
         wrapper_class=structlog.stdlib.BoundLogger,
@@ -74,11 +80,11 @@ logger = structlog.get_logger()
 
 class LoggingMiddleware:
     """Middleware for request/response logging."""
-    
-    def __init__(self, app):
+
+    def __init__(self, app: Any) -> None:
         self.app = app
-    
-    async def __call__(self, scope, receive, send):
+
+    async def __call__(self, scope: Any, receive: Any, send: Any) -> None:
         """Log requests and responses."""
         if scope["type"] == "http":
             # Log request
@@ -88,11 +94,11 @@ class LoggingMiddleware:
                 path=scope["path"],
                 query_string=scope["query_string"].decode(),
             )
-        
+
         await self.app(scope, receive, send)
 
 
-def log_error(error: Exception, context: Dict[str, Any] = None) -> None:
+def log_error(error: Exception, context: Optional[Dict[str, Any]] = None) -> None:
     """Log an error with context."""
     logger.error(
         "error_occurred",
@@ -105,10 +111,10 @@ def log_error(error: Exception, context: Dict[str, Any] = None) -> None:
 
 def log_audit(
     action: str,
-    user_id: str = None,
-    resource_type: str = None,
-    resource_id: str = None,
-    details: Dict[str, Any] = None,
+    user_id: Optional[str] = None,
+    resource_type: Optional[str] = None,
+    resource_id: Optional[str] = None,
+    details: Optional[Dict[str, Any]] = None,
 ) -> None:
     """Log an audit event."""
     logger.info(

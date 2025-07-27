@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Form, Input, Button, Typography, Divider, message, Tabs } from 'antd';
+import { Card, Form, Input, Button, Typography, message, Tabs } from 'antd';
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -50,7 +50,7 @@ const Profile: React.FC = () => {
     try {
       await updateUser(data);
       message.success('Profile updated successfully');
-    } catch (error) {
+    } catch {
       // Error is handled by the store
     }
   };
@@ -63,7 +63,7 @@ const Profile: React.FC = () => {
       });
       resetPasswordForm();
       message.success('Password changed successfully');
-    } catch (error) {
+    } catch {
       // Error is handled by the store
     }
   };

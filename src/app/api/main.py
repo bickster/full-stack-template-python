@@ -1,15 +1,12 @@
 """Main FastAPI application."""
 
 from contextlib import asynccontextmanager
-from typing import Any
-
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
-from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+from prometheus_client import CONTENT_TYPE_LATEST
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api.middleware import VersioningMiddleware
@@ -28,15 +25,15 @@ async def lifespan(app: FastAPI):
     # Startup
     setup_logging()
     logger.info("application_startup", app_name=settings.APP_NAME)
-    
+
     # Check database connection
     if await check_db_connection():
         logger.info("database_connected")
     else:
         logger.error("database_connection_failed")
-    
+
     yield
-    
+
     # Shutdown
     logger.info("application_shutdown")
 
@@ -72,22 +69,25 @@ app.add_middleware(
     allowed_hosts=["*"],  # Configure based on your needs
 )
 
+
 # Security headers middleware
 @app.middleware("http")
 async def security_headers_middleware(request: Request, call_next):
     """Add security headers to all responses."""
     response = await call_next(request)
-    
+
     # Security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Strict-Transport-Security"] = (
+        "max-age=31536000; includeSubDomains"
+    )
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    
+
     # Remove server header
     response.headers.pop("Server", None)
-    
+
     return response
 
 
@@ -102,7 +102,7 @@ async def app_exception_handler(request: Request, exc: AppException):
         status_code=exc.status_code,
         path=request.url.path,
     )
-    
+
     return JSONResponse(
         status_code=exc.status_code,
         content={
@@ -118,18 +118,20 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     """Handle validation errors."""
     errors = []
     for error in exc.errors():
-        errors.append({
-            "field": ".".join(str(loc) for loc in error["loc"]),
-            "message": error["msg"],
-            "type": error["type"],
-        })
-    
+        errors.append(
+            {
+                "field": ".".join(str(loc) for loc in error["loc"]),
+                "message": error["msg"],
+                "type": error["type"],
+            }
+        )
+
     logger.warning(
         "validation_error",
         errors=errors,
         path=request.url.path,
     )
-    
+
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
@@ -162,7 +164,7 @@ async def general_exception_handler(request: Request, exc: Exception):
         path=request.url.path,
         exc_info=True,
     )
-    
+
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
@@ -185,7 +187,7 @@ app.openapi = lambda: custom_openapi(app)
 async def health_check():
     """Health check endpoint."""
     db_ok = await check_db_connection()
-    
+
     return {
         "status": "healthy" if db_ok else "unhealthy",
         "database": "connected" if db_ok else "disconnected",
@@ -221,7 +223,7 @@ async def root():
 async def get_version_info():
     """Get API version information."""
     from app.api.middleware.versioning import VersioningMiddleware
-    
+
     return {
         "current": VersioningMiddleware.DEFAULT_VERSION,
         "supported": VersioningMiddleware.SUPPORTED_VERSIONS,

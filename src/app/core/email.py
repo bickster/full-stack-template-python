@@ -1,10 +1,9 @@
 """Email service for sending notifications."""
 
-import logging
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 import aiosmtplib
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -19,7 +18,7 @@ TEMPLATES_DIR = Path(__file__).parent.parent / "templates" / "email"
 class EmailService:
     """Service for sending emails."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize email service."""
         self.smtp_host = settings.SMTP_HOST
         self.smtp_port = settings.SMTP_PORT
@@ -28,7 +27,7 @@ class EmailService:
         self.from_email = settings.EMAILS_FROM_EMAIL
         self.from_name = settings.EMAILS_FROM_NAME
         self.use_tls = settings.SMTP_TLS
-        
+
         # Set up Jinja2 for email templates
         self.template_env = Environment(
             loader=FileSystemLoader(TEMPLATES_DIR),
@@ -43,13 +42,13 @@ class EmailService:
         text_content: Optional[str] = None,
     ) -> bool:
         """Send an email.
-        
+
         Args:
             to_email: Recipient email address
             subject: Email subject
             html_content: HTML content of the email
             text_content: Plain text content (optional)
-            
+
         Returns:
             bool: True if email was sent successfully
         """
@@ -68,7 +67,7 @@ class EmailService:
             if text_content:
                 part1 = MIMEText(text_content, "plain")
                 message.attach(part1)
-            
+
             part2 = MIMEText(html_content, "html")
             message.attach(part2)
 
@@ -105,17 +104,17 @@ class EmailService:
         reset_token: str,
     ) -> bool:
         """Send password reset email.
-        
+
         Args:
             to_email: Recipient email address
             username: User's username
             reset_token: Password reset token
-            
+
         Returns:
             bool: True if email was sent successfully
         """
         reset_url = f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
-        
+
         # Render email template
         template = self.template_env.get_template("password_reset.html")
         html_content = template.render(
@@ -123,7 +122,7 @@ class EmailService:
             reset_url=reset_url,
             app_name=settings.APP_NAME,
         )
-        
+
         # Plain text version
         text_content = f"""
 Hello {username},
@@ -140,7 +139,7 @@ If you did not request this password reset, please ignore this email.
 Best regards,
 {settings.APP_NAME} Team
         """.strip()
-        
+
         return await self.send_email(
             to_email=to_email,
             subject=f"Password Reset Request - {settings.APP_NAME}",
@@ -154,11 +153,11 @@ Best regards,
         username: str,
     ) -> bool:
         """Send welcome email to new user.
-        
+
         Args:
             to_email: Recipient email address
             username: User's username
-            
+
         Returns:
             bool: True if email was sent successfully
         """
@@ -169,7 +168,7 @@ Best regards,
             app_name=settings.APP_NAME,
             login_url=f"{settings.FRONTEND_URL}/login",
         )
-        
+
         # Plain text version
         text_content = f"""
 Welcome to {settings.APP_NAME}, {username}!
@@ -184,7 +183,7 @@ If you have any questions or need assistance, please don't hesitate to contact u
 Best regards,
 {settings.APP_NAME} Team
         """.strip()
-        
+
         return await self.send_email(
             to_email=to_email,
             subject=f"Welcome to {settings.APP_NAME}!",
@@ -199,17 +198,19 @@ Best regards,
         verification_token: str,
     ) -> bool:
         """Send email verification email.
-        
+
         Args:
             to_email: Recipient email address
             username: User's username
             verification_token: Email verification token
-            
+
         Returns:
             bool: True if email was sent successfully
         """
-        verification_url = f"{settings.FRONTEND_URL}/verify-email?token={verification_token}"
-        
+        verification_url = (
+            f"{settings.FRONTEND_URL}/verify-email?token={verification_token}"
+        )
+
         # Render email template
         template = self.template_env.get_template("email_verification.html")
         html_content = template.render(
@@ -217,7 +218,7 @@ Best regards,
             verification_url=verification_url,
             app_name=settings.APP_NAME,
         )
-        
+
         # Plain text version
         text_content = f"""
 Hello {username},
@@ -234,7 +235,7 @@ If you did not create an account, please ignore this email.
 Best regards,
 {settings.APP_NAME} Team
         """.strip()
-        
+
         return await self.send_email(
             to_email=to_email,
             subject=f"Verify your email - {settings.APP_NAME}",

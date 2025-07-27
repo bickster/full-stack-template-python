@@ -19,12 +19,16 @@ vi.mock('react-router-dom', async () => {
 vi.mock('../stores/authStore');
 
 describe('AuthGuard', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should show loading spinner when loading', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       isAuthenticated: false,
       user: null,
       isLoading: true,
-    } as any);
+    } as ReturnType<typeof useAuthStore>);
 
     render(
       <AuthGuard>
@@ -32,7 +36,10 @@ describe('AuthGuard', () => {
       </AuthGuard>
     );
 
-    expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
+    // Ant Design Spin component has aria-busy and ant-spin class
+    const spinner = document.querySelector('[aria-busy="true"]');
+    expect(spinner).toBeInTheDocument();
+    expect(spinner).toHaveClass('ant-spin-spinning');
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
   });
 
@@ -41,7 +48,7 @@ describe('AuthGuard', () => {
       isAuthenticated: false,
       user: null,
       isLoading: false,
-    } as any);
+    } as ReturnType<typeof useAuthStore>);
 
     render(
       <AuthGuard>
@@ -50,11 +57,12 @@ describe('AuthGuard', () => {
     );
 
     expect(Navigate).toHaveBeenCalledWith(
-      expect.objectContaining({
+      {
         to: '/login',
         replace: true,
-      }),
-      {}
+        state: { from: { pathname: '/dashboard' } }
+      },
+      undefined
     );
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
   });
@@ -64,7 +72,7 @@ describe('AuthGuard', () => {
       isAuthenticated: true,
       user: mockUser,
       isLoading: false,
-    } as any);
+    } as ReturnType<typeof useAuthStore>);
 
     render(
       <AuthGuard>
@@ -83,7 +91,7 @@ describe('AuthGuard', () => {
       isAuthenticated: true,
       user: unverifiedUser,
       isLoading: false,
-    } as any);
+    } as ReturnType<typeof useAuthStore>);
 
     render(
       <AuthGuard requireVerified={true}>
@@ -92,11 +100,11 @@ describe('AuthGuard', () => {
     );
 
     expect(Navigate).toHaveBeenCalledWith(
-      expect.objectContaining({
+      {
         to: '/verify-email',
         replace: true,
-      }),
-      {}
+      },
+      undefined
     );
   });
 
@@ -107,7 +115,7 @@ describe('AuthGuard', () => {
       isAuthenticated: true,
       user: unverifiedUser,
       isLoading: false,
-    } as any);
+    } as ReturnType<typeof useAuthStore>);
 
     render(
       <AuthGuard requireVerified={false}>

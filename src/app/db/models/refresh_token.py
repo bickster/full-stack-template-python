@@ -17,9 +17,7 @@ class RefreshToken(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     user_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     token_hash = Column(String(255), unique=True, nullable=False, index=True)
     expires_at = Column(DateTime(timezone=True), nullable=False)
@@ -47,7 +45,7 @@ class RefreshToken(Base):
     @property
     def is_revoked(self) -> bool:
         """Check if token is revoked."""
-        return self.revoked_at is not None
+        return bool(self.revoked_at is not None)
 
     @property
     def is_valid(self) -> bool:

@@ -1,6 +1,6 @@
 """Monitoring and metrics."""
 
-from typing import Optional
+from typing import Optional, Any
 
 from prometheus_client import Counter, Gauge, Histogram, generate_latest
 
@@ -63,49 +63,50 @@ rate_limit_exceeded_total = Counter(
 
 class MetricsMiddleware:
     """Middleware for collecting metrics."""
-    
-    def __init__(self, app):
+
+    def __init__(self, app: Any) -> None:
         self.app = app
-    
-    async def __call__(self, scope, receive, send):
+
+    async def __call__(self, scope: Any, receive: Any, send: Any) -> None:
         """Collect metrics for each request."""
         if scope["type"] != "http" or not settings.PROMETHEUS_ENABLED:
             await self.app(scope, receive, send)
             return
-        
+
         path = scope["path"]
         method = scope["method"]
-        
+
         # Skip metrics endpoint
         if path == "/metrics":
             await self.app(scope, receive, send)
             return
-        
+
         # Record request
         import time
+
         start_time = time.time()
-        
+
         # Capture response status
         status_code = 500
-        
-        async def send_wrapper(message):
+
+        async def send_wrapper(message: Any) -> None:
             nonlocal status_code
             if message["type"] == "http.response.start":
                 status_code = message["status"]
             await send(message)
-        
+
         try:
             await self.app(scope, receive, send_wrapper)
         finally:
             # Record metrics
             duration = time.time() - start_time
-            
+
             http_requests_total.labels(
                 method=method,
                 endpoint=path,
                 status=status_code,
             ).inc()
-            
+
             http_request_duration_seconds.labels(
                 method=method,
                 endpoint=path,
@@ -114,7 +115,7 @@ class MetricsMiddleware:
 
 async def get_metrics() -> str:
     """Get Prometheus metrics."""
-    return generate_latest()
+    return str(generate_latest())
 
 
 def record_login_attempt(success: bool) -> None:
@@ -141,7 +142,7 @@ def record_database_operation(
         operation=operation,
         table=table,
     ).inc()
-    
+
     if duration is not None:
         database_operation_duration_seconds.labels(
             operation=operation,
@@ -149,13 +150,13 @@ def record_database_operation(
         ).observe(duration)
 
 
-def record_cache_operation(operation: str, hit: bool = None) -> None:
+def record_cache_operation(operation: str, hit: Optional[bool] = None) -> None:
     """Record a cache operation."""
     if operation == "get":
         result = "hit" if hit else "miss"
     else:
         result = "success"
-    
+
     cache_operations_total.labels(
         operation=operation,
         result=result,

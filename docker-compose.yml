@@ -12,6 +12,8 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fullstack_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
@@ -36,6 +38,8 @@ services:
       db:
         condition: service_healthy
     command: uvicorn app.api.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - fullstack_network
 
   frontend:
     build:
@@ -48,6 +52,8 @@ services:
       - "${FRONTEND_PORT:-3000}:80"
     depends_on:
       - api
+    networks:
+      - fullstack_network
 
   nginx:
     image: nginx:alpine
@@ -61,6 +67,12 @@ services:
     depends_on:
       - api
       - frontend
+    networks:
+      - fullstack_network
 
 volumes:
   postgres_data:
+
+networks:
+  fullstack_network:
+    driver: bridge

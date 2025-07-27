@@ -2,12 +2,12 @@
 export interface ApiError {
   error: string;
   code: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export interface SuccessResponse {
   message: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }
 
 // User types

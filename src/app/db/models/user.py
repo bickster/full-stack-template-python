@@ -1,7 +1,5 @@
 """User database model."""
 
-from datetime import datetime
-from typing import Optional
 from uuid import uuid4
 
 from sqlalchemy import Boolean, Column, DateTime, String, Index
@@ -31,19 +29,16 @@ class User(Base):
         "RefreshToken",
         back_populates="user",
         cascade="all, delete-orphan",
-        lazy="selectin"
+        lazy="selectin",
     )
     login_attempts = relationship(
         "LoginAttempt",
         back_populates="user",
         cascade="all, delete-orphan",
-        lazy="selectin"
+        lazy="selectin",
     )
     audit_logs = relationship(
-        "AuditLog",
-        back_populates="user",
-        cascade="all, delete-orphan",
-        lazy="selectin"
+        "AuditLog", back_populates="user", cascade="all, delete-orphan", lazy="selectin"
     )
 
     # Indexes

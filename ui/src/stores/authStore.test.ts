@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import useAuthStore from './authStore';
 import { authApi, usersApi } from '../services/api';
 import { mockUser, mockTokens } from '../test/utils';
@@ -112,7 +112,7 @@ describe('authStore', () => {
             email: 'test@example.com',
             password: 'wrong-password',
           });
-        } catch (e) {
+        } catch {
           // Expected error
         }
       });

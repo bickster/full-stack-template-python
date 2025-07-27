@@ -46,7 +46,7 @@ const Register: React.FC = () => {
       });
       // Redirect to login page after successful registration
       navigate('/login');
-    } catch (error) {
+    } catch {
       // Error is handled by the store
     }
   };

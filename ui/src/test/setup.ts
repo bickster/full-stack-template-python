@@ -42,3 +42,13 @@ global.localStorage = localStorageMock as Storage;
 
 // Mock fetch
 global.fetch = vi.fn();
+
+// Mock react-router-dom globally
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    Navigate: vi.fn(() => null),
+    useNavigate: () => vi.fn(),
+  };
+});

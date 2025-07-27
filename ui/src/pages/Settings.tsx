@@ -45,7 +45,7 @@ const Settings: React.FC = () => {
         try {
           await deleteAccount();
           navigate('/login');
-        } catch (error) {
+        } catch {
           notification.error({
             message: 'Failed to delete account',
             description: 'An error occurred while deleting your account. Please try again.',

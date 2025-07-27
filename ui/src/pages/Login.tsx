@@ -42,7 +42,7 @@ const Login: React.FC = () => {
     try {
       await login(data);
       navigate(from, { replace: true });
-    } catch (error) {
+    } catch {
       // Error is handled by the store
     }
   };
