@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import { message } from 'antd';
 import type {
   AuthStore,
   LoginRequest,
@@ -47,7 +46,6 @@ const useAuthStore = create<AuthStore>()(
             localStorage.setItem('auth-tokens', JSON.stringify(tokens));
             localStorage.setItem('auth-user', JSON.stringify(user));
             
-            message.success('Logged in successfully');
           } catch (error) {
             const axiosError = error as AxiosError<{ error: string }>;
             const errorMessage = axiosError.response?.data?.error || 'Login failed';
@@ -55,7 +53,6 @@ const useAuthStore = create<AuthStore>()(
               isLoading: false,
               error: errorMessage,
             });
-            message.error(errorMessage);
             throw error;
           }
         },
@@ -65,7 +62,6 @@ const useAuthStore = create<AuthStore>()(
           try {
             await authApi.register(data);
             set({ isLoading: false, error: null });
-            message.success('Registration successful! Please login.');
           } catch (error) {
             const axiosError = error as AxiosError<{ error: string }>;
             const errorMessage = axiosError.response?.data?.error || 'Registration failed';
@@ -73,7 +69,6 @@ const useAuthStore = create<AuthStore>()(
               isLoading: false,
               error: errorMessage,
             });
-            message.error(errorMessage);
             throw error;
           }
         },
@@ -99,7 +94,6 @@ const useAuthStore = create<AuthStore>()(
             localStorage.removeItem('auth-tokens');
             localStorage.removeItem('auth-user');
             
-            message.success('Logged out successfully');
           }
         },
 
@@ -145,7 +139,6 @@ const useAuthStore = create<AuthStore>()(
             // Update stored user
             localStorage.setItem('auth-user', JSON.stringify(updatedUser));
             
-            message.success('Profile updated successfully');
           } catch (error) {
             const axiosError = error as AxiosError<{ error: string }>;
             const errorMessage = axiosError.response?.data?.error || 'Update failed';
@@ -153,7 +146,6 @@ const useAuthStore = create<AuthStore>()(
               isLoading: false,
               error: errorMessage,
             });
-            message.error(errorMessage);
             throw error;
           }
         },
@@ -163,7 +155,6 @@ const useAuthStore = create<AuthStore>()(
           try {
             await usersApi.changePassword(data);
             set({ isLoading: false, error: null });
-            message.success('Password changed successfully');
           } catch (error) {
             const axiosError = error as AxiosError<{ error: string }>;
             const errorMessage = axiosError.response?.data?.error || 'Password change failed';
@@ -171,7 +162,6 @@ const useAuthStore = create<AuthStore>()(
               isLoading: false,
               error: errorMessage,
             });
-            message.error(errorMessage);
             throw error;
           }
         },
@@ -194,7 +184,6 @@ const useAuthStore = create<AuthStore>()(
             localStorage.removeItem('auth-tokens');
             localStorage.removeItem('auth-user');
             
-            message.success('Account deleted successfully');
           } catch (error) {
             const axiosError = error as AxiosError<{ error: string }>;
             const errorMessage = axiosError.response?.data?.error || 'Account deletion failed';
@@ -202,7 +191,6 @@ const useAuthStore = create<AuthStore>()(
               isLoading: false,
               error: errorMessage,
             });
-            message.error(errorMessage);
             throw error;
           }
         },

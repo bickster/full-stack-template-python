@@ -39,6 +39,7 @@ const Register: React.FC = () => {
   }, [clearError]);
 
   const onSubmit = async (data: RegisterFormData) => {
+    console.log('Form submitted with data:', data);
     try {
       await register({
         email: data.email,
@@ -47,7 +48,8 @@ const Register: React.FC = () => {
       });
       // Redirect to login page after successful registration
       navigate('/login');
-    } catch {
+    } catch (error) {
+      console.error('Registration error:', error);
       // Error is handled by the store
     }
   };

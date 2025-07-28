@@ -3,18 +3,29 @@
 This document extracts the reusable components from the AppStore Metadata Extractor specification that can serve as a template for any full-stack application with authentication.
 
 ## Table of Contents
-1. [Authentication & User Management](#1-authentication--user-management)
-2. [API Structure & Patterns](#2-api-structure--patterns)
-3. [Frontend Architecture](#3-frontend-architecture)
-4. [Database Schema (Auth Only)](#4-database-schema-auth-only)
-5. [Security Implementation](#5-security-implementation)
-6. [Testing Patterns](#6-testing-patterns)
-7. [Deployment Structure](#7-deployment-structure)
-8. [WBS Framework Patterns](#8-wbs-framework-patterns)
-9. [Development Workflow](#9-development-workflow)
-10. [Client SDKs Pattern](#10-client-sdks-pattern)
-11. [Common Utilities](#11-common-utilities)
-12. [Project Structure Template](#12-project-structure-template)
+1. [Configuration Management & Common Pitfalls](#configuration-management--common-pitfalls)
+2. [Authentication & User Management](#1-authentication--user-management)
+3. [API Structure & Patterns](#2-api-structure--patterns)
+4. [Frontend Architecture](#3-frontend-architecture)
+5. [Database Schema (Auth Only)](#4-database-schema-auth-only)
+6. [Security Implementation](#5-security-implementation)
+7. [Testing Patterns](#6-testing-patterns)
+8. [Deployment Structure](#7-deployment-structure)
+9. [WBS Framework Patterns](#8-wbs-framework-patterns)
+10. [Development Workflow](#9-development-workflow)
+11. [Client SDKs Pattern](#10-client-sdks-pattern)
+12. [Common Utilities](#11-common-utilities)
+13. [Project Structure Template](#12-project-structure-template)
+
+## Configuration Management
+
+> **Note**: For common configuration pitfalls and troubleshooting, see [CLAUDE.md](../CLAUDE.md#configuration-management-first).
+
+### Multiple Configuration Points
+Be aware of ALL configuration locations:
+- **Frontend**: .env, .env.local, .env.production, vite.config.ts, src/services/api.ts
+- **Backend**: .env, config.py, settings.py, docker-compose.yml
+- **Proxy**: vite.config.ts (dev), nginx.conf (production)
 
 ---
 
@@ -331,16 +342,264 @@ Content-Security-Policy: default-src 'self'
 
 ## 6. Testing Patterns
 
+### Environment-First Testing Setup
+
+**CRITICAL**: Set up the complete testing environment before writing any tests. This prevents the cascade of fixes that come from environment mismatches.
+
+#### Pre-Testing Environment Audit
+```bash
+# 1. Dependency Audit - Run this FIRST
+pip freeze > current_requirements.txt
+diff requirements-dev.txt current_requirements.txt
+
+# 2. Code Structure Audit - Understand before extending
+find src/ -name "*.py" -exec grep -l "class.*Exception" {} \;
+find src/ -name "*.py" -exec grep -l "def get_current_user" {} \;
+find tests/ -name "*.py" -exec grep -l "AsyncClient" {} \;
+
+# 3. Test Patterns Audit - Follow existing patterns
+pytest tests/ --collect-only | head -20  # See test structure
+grep -r "pytest.fixture" tests/ | head -5  # See fixture patterns
+
+# 4. Version Compatibility Check
+python -c "import httpx; print('httpx version:', httpx.__version__)"
+python -c "from httpx import AsyncClient, ASGITransport"  # Test imports
+```
+
+#### Environment Setup Verification
+```bash
+# Install all dependencies upfront
+pip install -r requirements-dev.txt
+
+# Verify async database support
+python -c "from sqlalchemy.ext.asyncio import create_async_engine; print('✅ Async SQLAlchemy ready')"
+python -c "import asyncpg; print('✅ AsyncPG ready')"
+
+# Verify test tooling
+python -c "import pytest, faker, httpx; print('✅ Test tools ready')"
+
+# Set correct PYTHONPATH for imports
+export PYTHONPATH=/path/to/project/src
+python -c "from app.api.main import app; print('✅ App imports work')"
+```
+
+#### "One Shot" Testing Philosophy
+Instead of the traditional "implement then fix" cycle:
+
+1. **Read First**: Understand existing code patterns and signatures
+2. **Environment Check**: Verify all dependencies and versions
+3. **Pattern Match**: Follow existing test structures exactly
+4. **Test Small**: Write one test, verify it works, then continue
+5. **Validate Continuously**: Run tests after each addition
+
+> **Implementation Note**: See IMPLEMENTATION_PLAN.md "Phase 0: Environment Audit" for the complete step-by-step checklist to implement this philosophy.
+
 ### Test Categories
 - **Unit Tests** (60% of tests): Individual functions and methods
 - **Integration Tests** (30% of tests): Module interactions and API endpoints
 - **Functional Tests** (10% of tests): End-to-end scenarios
 
-### Coverage Requirements
-- Overall: 80% minimum
+### Coverage Requirements & Strategy
+- Overall: 80% minimum (MANDATORY - not negotiable)
 - Core business logic: 90% minimum
-- API endpoints: 85% minimum
+- API endpoints: 85% minimum  
 - Security functions: 95% minimum
+
+#### 80% Coverage Achievement Strategy
+
+**CRITICAL**: 80% is not a suggestion - it's a hard requirement. Use this systematic approach to reach it:
+
+##### 1. Coverage Analysis Workflow
+```bash
+# Get current coverage with detailed report
+pytest --cov=src --cov-report=html --cov-report=term-missing
+# Open htmlcov/index.html to see exactly which lines need coverage
+
+# Identify priority modules (highest impact for coverage gain)
+pytest --cov=src --cov-report=term | grep -E "TOTAL|src/" | sort -k4 -nr
+```
+
+##### 2. Module-by-Module Coverage Strategy
+
+**High-Impact Modules** (focus here first for biggest coverage gains):
+- `src/app/api/routes/` - Usually 200+ lines, often <30% covered
+- `src/app/core/` - Core business logic, easier to test
+- `src/app/api/dependencies.py` - Critical auth functions
+
+**Medium-Impact Modules**:
+- `src/app/db/models/` - Model properties and methods
+- `src/app/api/middleware/` - Request/response processing
+
+**Low-Priority for Coverage** (exclude or test minimally):
+- `src/app/cli/` - CLI commands
+- `src/app/core/config_production.py` - Production-only code
+- Migration scripts
+
+##### 3. Systematic Testing Approach
+
+**Step 1: Unit Test All Core Functions (40-50% coverage)**
+```bash
+# Test every function in these modules:
+pytest --cov=src/app/core --cov-report=term-missing
+# Aim for 95%+ coverage in core modules
+```
+
+**Step 2: Integration Test All API Endpoints (70-75% coverage)**
+```bash
+# Test every endpoint with success/error cases:
+pytest --cov=src/app/api/routes --cov-report=term-missing
+# Each route needs: success case, validation error, auth error
+```
+
+**Step 3: Test Remaining Components (80%+ coverage)**
+```bash
+# Cover middleware, dependencies, utilities:
+pytest --cov=src --cov-report=term-missing
+# Focus on modules still showing red in HTML report
+```
+
+##### 4. Coverage Verification Commands
+
+```bash
+# MANDATORY: Run this before claiming phase complete
+pytest --cov=src --cov-report=term --cov-fail-under=80
+# This command MUST pass - if it fails, phase is not complete
+
+# Generate HTML report for line-by-line analysis
+pytest --cov=src --cov-report=html
+echo "Open htmlcov/index.html to see uncovered lines"
+
+# Focus on specific modules if needed
+pytest tests/unit/test_auth.py --cov=src/app/api/routes/auth --cov-report=term-missing
+```
+
+##### 5. Common Coverage Gaps & Solutions
+
+**Gap**: Low API route coverage (20-30%)
+**Solution**: Test each endpoint with all scenarios:
+```python
+# For each endpoint, test:
+- Success case with valid data
+- Validation error (422)
+- Authentication required (401) 
+- Authorization denied (403)
+- Resource not found (404)
+- Rate limiting (429)
+```
+
+**Gap**: Untested error handling paths
+**Solution**: Force error conditions:
+```python
+# Test exception handling
+with patch('module.function', side_effect=Exception("Database error")):
+    response = client.post("/api/endpoint")
+    assert response.status_code == 500
+```
+
+**Gap**: Missing model method tests
+**Solution**: Test all model properties and methods:
+```python
+# Test model properties, relationships, custom methods
+user = User(email="test@example.com")
+assert user.is_active == True
+assert user.full_name == "Test User"
+```
+
+##### 6. Coverage Automation
+
+Add to pytest.ini:
+```ini
+[tool:pytest]
+addopts = --cov=src --cov-fail-under=80 --cov-report=term-missing
+```
+
+This ensures every test run validates the 80% requirement.
+
+### Complete System Verification
+
+After implementing all components, run this comprehensive verification to ensure everything works:
+
+#### Full Stack Health Check
+```bash
+# 1. Environment Setup
+export PYTHONPATH=$(pwd)/src
+source venv/bin/activate  # or your virtual environment
+
+# 2. Install all dependencies
+pip install -r requirements-dev.txt
+cd ui && npm install && cd ..
+
+# 3. Database setup (if using Docker)
+docker-compose up -d db
+sleep 10  # Wait for database to be ready
+
+# 4. Run database migrations
+make migrate
+
+# 5. Backend verification
+echo "🔍 Testing backend..."
+make test                    # All tests pass
+make lint                    # No linting errors
+make type-check             # No type errors
+pytest --cov=src --cov-fail-under=80  # Coverage requirement met
+
+# 6. Frontend verification  
+echo "🔍 Testing frontend..."
+cd ui
+npm test                    # All tests pass
+npm run lint               # No linting errors
+npm run type-check         # No TypeScript errors
+npm run build              # Build succeeds
+cd ..
+
+# 7. Integration verification
+echo "🔍 Testing full stack..."
+docker-compose up -d       # Start all services
+sleep 30                   # Wait for services
+
+# Test API endpoints
+curl -f http://localhost:8000/health || echo "❌ API health check failed"
+curl -f http://localhost:3000 || echo "❌ Frontend not accessible"
+
+# Test auth flow
+curl -X POST http://localhost:8000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","username":"test","password":"TestPass123!"}' \
+  || echo "❌ Registration endpoint failed"
+
+# 8. Cleanup
+docker-compose down
+
+echo "✅ Full stack verification complete!"
+```
+
+#### Continuous Integration Simulation
+```bash
+# Simulate what CI will run
+echo "🤖 Running CI simulation..."
+
+# Backend CI pipeline
+make format              # Format all code
+make lint               # Check code style  
+make type-check         # Verify types
+make test-cov           # Run tests with coverage
+make security-check     # Security analysis
+
+# Frontend CI pipeline
+cd ui
+npm run format          # Format code
+npm run lint           # Check style
+npm run type-check     # Verify TypeScript
+npm test -- --coverage # Test with coverage
+npm run build          # Production build
+cd ..
+
+# Integration CI pipeline
+docker-compose -f docker-compose.test.yml up --abort-on-container-exit
+docker-compose -f docker-compose.test.yml down
+
+echo "✅ CI simulation passed!"
+```
 
 ### Test Fixtures
 ```python
@@ -989,6 +1248,80 @@ Component: UserAuthentication {
 ---
 
 ## 9. Development Workflow
+
+### Continuous Quality Assurance
+
+**CRITICAL**: Quality checks must be integrated throughout development, not just at the end.
+
+#### After Every Code Change
+Run these commands before moving to the next task:
+```bash
+# Backend changes
+make test              # Run tests immediately
+make lint              # Check code style
+make type-check        # Verify type annotations
+
+# Frontend changes  
+npm test              # Run tests immediately
+npm run lint          # Check code style
+npx tsc --noEmit      # Verify TypeScript types
+```
+
+#### Before Every Commit
+1. **Format all code**:
+   ```bash
+   make format           # Runs black, isort, prettier
+   ```
+
+2. **Run full validation**:
+   ```bash
+   make test-all         # All tests must pass
+   make lint             # No linting errors
+   make type-check       # No type errors
+   ```
+
+3. **Check coverage**:
+   ```bash
+   make test-cov         # Verify coverage thresholds
+   ```
+
+#### Quality Gates
+- ❌ **Never commit** with failing tests
+- ❌ **Never commit** with linting errors
+- ❌ **Never commit** with type errors
+- ❌ **Never skip** quality checks to "save time"
+
+#### Common Quality Issues to Prevent
+
+1. **Test-Implementation Mismatch**
+   - Write tests alongside implementation
+   - Run tests immediately after code changes
+   - Update tests when changing implementations
+
+2. **Missing Type Annotations**
+   ```python
+   # ❌ Bad
+   def get_user(id):
+       return db.query(User).get(id)
+   
+   # ✅ Good
+   def get_user(id: str) -> Optional[User]:
+       return db.query(User).get(id)
+   ```
+
+3. **Inconsistent Formatting**
+   - Configure your editor to format on save
+   - Run formatters before committing
+   - Use pre-commit hooks
+
+4. **Low Test Coverage**
+   - Write tests for all new functions
+   - Test both success and error paths
+   - Don't skip edge cases
+
+---
+
+## 9. Development Workflow (Original)
 
 ### Git Workflow
 ```bash
