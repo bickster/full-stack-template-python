@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import type { AxiosRequestConfig } from "axios";
+import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import useAuthStore from "./authStore";
 import { authApi, usersApi } from "../services/api";
 import { mockUser, mockTokens } from "../test/utils";
@@ -56,12 +56,12 @@ describe("authStore", () => {
   });
 
   // Helper to create mock Axios responses
-  const createMockResponse = <T>(data: T) => ({
+  const createMockResponse = <T>(data: T): AxiosResponse<T> => ({
     data,
     status: 200,
     statusText: 'OK',
     headers: {},
-    config: {} as AxiosRequestConfig,
+    config: {} as InternalAxiosRequestConfig,
   });
 
   describe("login", () => {
