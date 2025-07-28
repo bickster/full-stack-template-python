@@ -1,8 +1,8 @@
-.PHONY: help install install-dev serve-api serve-frontend test test-cov test-unit test-integration \
-        test-functional test-all test-frontend test-frontend-watch lint format format-check type-check \
-        security-check migrate migrate-create migrate-down build build-sdk-python build-sdk-typescript \
-        docker-build docker-up docker-down docker-logs docker-ps docker-clean db-shell db-backup \
-        db-restore clean setup-dev ci-test
+.PHONY: help install install-dev serve-api serve-frontend stop-api stop-frontend stop-all \
+        test test-cov test-unit test-integration test-functional test-all test-frontend test-frontend-watch \
+        lint format format-check type-check security-check migrate migrate-create migrate-down \
+        build build-sdk-python build-sdk-typescript docker-build docker-up docker-down docker-logs \
+        docker-ps docker-clean db-shell db-backup db-restore clean setup-dev ci-test
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -25,6 +25,20 @@ serve-api: ## Run development API server
 
 serve-frontend: ## Run development frontend server
 	cd ui && npm run dev
+
+stop-api: ## Stop development API server
+	@echo "Stopping API server..."
+	@pkill -f "uvicorn app.api.main:app" || echo "API server not running"
+
+stop-frontend: ## Stop development frontend server
+	@echo "Stopping frontend server..."
+	@pkill -f "vite" || echo "Frontend server not running"
+
+stop-all: ## Stop all development servers
+	@echo "Stopping all development servers..."
+	@make stop-api
+	@make stop-frontend
+	@echo "All servers stopped"
 
 # Testing
 test: ## Run tests
