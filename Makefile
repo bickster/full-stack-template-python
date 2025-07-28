@@ -12,11 +12,11 @@ help: ## Show this help message
 
 # Development
 install: ## Install production dependencies
-	pip install -r requirements.txt
+	pip3 install -r requirements.txt
 	cd ui && npm install
 
 install-dev: ## Install development dependencies
-	pip install -r requirements-dev.txt
+	pip3 install -r requirements-dev.txt
 	cd ui && npm install
 	pre-commit install
 
@@ -87,7 +87,7 @@ type-check: ## Run type checking
 	cd ui && npm run type-check
 
 security-check: ## Run security checks
-	pip-audit
+	pip3 list --format=freeze | pip-audit
 	bandit -r src
 
 # Database
