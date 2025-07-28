@@ -264,7 +264,7 @@ def update():
 @cli.command()
 @click.option("--old", prompt="Current password", hide_input=True)
 @click.option("--new", prompt="New password", hide_input=True, confirmation_prompt=True)
-def change_password(old: str, new: str):
+def change_password(old: str, new: str) -> None:
     """Change account password"""
     client = get_client()
 
@@ -330,7 +330,7 @@ def health():
 
 @cli.command()
 @click.option("--force", is_flag=True, help="Skip confirmation prompts")
-def delete_account(force: bool):
+def delete_account(force: bool) -> None:
     """Delete your account (irreversible!)"""
     client = get_client()
 

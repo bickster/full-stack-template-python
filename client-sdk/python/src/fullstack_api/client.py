@@ -2,9 +2,8 @@
 
 import json
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
-import httpx
 from httpx import AsyncClient as HttpxAsyncClient
 from httpx import Client as HttpxClient
 from httpx import Response

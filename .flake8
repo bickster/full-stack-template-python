@@ -1,0 +1,40 @@
+[flake8]
+max-line-length = 88
+extend-ignore =
+    # Import not at top of file
+    E402,
+    # Missing docstrings
+    D100, D101, D102, D103, D104, D105, D106, D107,
+    # Docstring issues
+    D200, D201, D202, D203, D204, D205, D400, D401, D403,
+    # Line too long (handled by black)
+    E501,
+    # Unused imports (will clean up later)
+    F401,
+    # Unused variables (will clean up later)
+    F841,
+    # f-string missing placeholders
+    F541,
+    # Bare except
+    E722,
+    # Whitespace before ':' (conflicts with black)
+    E203
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    build,
+    dist,
+    *.egg-info,
+    .pytest_cache,
+    .mypy_cache,
+    ui/,
+    node_modules/
+per-file-ignores =
+    # Init files don't need docstrings
+    __init__.py:D104
+    # Tests can have more relaxed rules
+    test_*.py:D100,D101,D102,D103
+    # Migrations are auto-generated
+    alembic/versions/*:E501,D100,D101,D102,D103

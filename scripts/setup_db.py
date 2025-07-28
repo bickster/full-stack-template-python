@@ -9,7 +9,7 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from app.db.init_db import check_db_connection, init_db
+from app.db.init_db import check_db_connection, init_db  # noqa: E402
 
 
 async def wait_for_db(max_retries: int = 30, retry_interval: int = 2) -> bool:
@@ -22,7 +22,8 @@ async def wait_for_db(max_retries: int = 30, retry_interval: int = 2) -> bool:
             return True
 
         print(
-            f"Database not ready, retrying in {retry_interval}s... ({i+1}/{max_retries})"
+            f"Database not ready, retrying in {retry_interval}s... "
+            f"({i+1}/{max_retries})"
         )
         time.sleep(retry_interval)
 
@@ -31,7 +32,7 @@ async def wait_for_db(max_retries: int = 30, retry_interval: int = 2) -> bool:
 
 
 async def main():
-    """Main setup function."""
+    """Run the main setup function."""
     # Wait for database
     if not await wait_for_db():
         sys.exit(1)
