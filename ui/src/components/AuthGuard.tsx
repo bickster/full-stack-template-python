@@ -1,13 +1,16 @@
-import { Navigate, useLocation } from 'react-router-dom';
-import { Spin } from 'antd';
-import useAuthStore from '../stores/authStore';
+import { Navigate, useLocation } from "react-router-dom";
+import { Spin } from "antd";
+import useAuthStore from "../stores/authStore";
 
 interface AuthGuardProps {
   children: React.ReactNode;
   requireVerified?: boolean;
 }
 
-const AuthGuard: React.FC<AuthGuardProps> = ({ children, requireVerified = false }) => {
+const AuthGuard: React.FC<AuthGuardProps> = ({
+  children,
+  requireVerified = false,
+}) => {
   const location = useLocation();
   const { isAuthenticated, user, isLoading } = useAuthStore();
 

@@ -10,12 +10,14 @@
     "build": "tsc -b && vite build",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "test:run": "vitest run",
-    "check-all": "npm run type-check && npm run lint && npm run test:run"
+    "check-all": "npm run type-check && npm run lint && npm run format:check && npm run test:run"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
@@ -50,6 +52,7 @@
     "globals": "^16.3.0",
     "jsdom": "^26.1.0",
     "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "vite": "^7.0.4",

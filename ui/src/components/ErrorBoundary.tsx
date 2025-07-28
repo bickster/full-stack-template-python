@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import type { ReactNode } from 'react';
-import { Result, Button } from 'antd';
+import React, { Component } from "react";
+import type { ReactNode } from "react";
+import { Result, Button } from "antd";
 
 interface Props {
   children: ReactNode;
@@ -22,12 +22,12 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error("Error caught by boundary:", error, errorInfo);
   }
 
   handleReset = () => {
     this.setState({ hasError: false, error: null });
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   render() {
@@ -37,7 +37,9 @@ class ErrorBoundary extends Component<Props, State> {
           <Result
             status="error"
             title="Something went wrong"
-            subTitle={this.state.error?.message || 'An unexpected error occurred'}
+            subTitle={
+              this.state.error?.message || "An unexpected error occurred"
+            }
             extra={[
               <Button type="primary" key="home" onClick={this.handleReset}>
                 Go to Home

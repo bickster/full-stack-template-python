@@ -1,101 +1,103 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 import {
   loginSchema,
   registerSchema,
   updateProfileSchema,
   changePasswordSchema,
-} from './validation';
+} from "./validation";
 
-describe('validation schemas', () => {
-  describe('loginSchema', () => {
-    it('should validate correct login data', () => {
+describe("validation schemas", () => {
+  describe("loginSchema", () => {
+    it("should validate correct login data", () => {
       const validData = {
-        email: 'test@example.com',
-        password: 'password',
+        email: "test@example.com",
+        password: "password",
       };
-      
+
       const result = loginSchema.safeParse(validData);
       expect(result.success).toBe(true);
     });
 
-    it('should reject invalid email', () => {
+    it("should reject invalid email", () => {
       const invalidData = {
-        email: 'invalid-email',
-        password: 'password',
+        email: "invalid-email",
+        password: "password",
       };
-      
+
       const result = loginSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Invalid email address');
+        expect(result.error.issues[0].message).toBe("Invalid email address");
       }
     });
 
-    it('should reject empty password', () => {
+    it("should reject empty password", () => {
       const invalidData = {
-        email: 'test@example.com',
-        password: '',
+        email: "test@example.com",
+        password: "",
       };
-      
+
       const result = loginSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Password is required');
+        expect(result.error.issues[0].message).toBe("Password is required");
       }
     });
   });
 
-  describe('registerSchema', () => {
-    it('should validate correct registration data', () => {
+  describe("registerSchema", () => {
+    it("should validate correct registration data", () => {
       const validData = {
-        email: 'test@example.com',
-        username: 'testuser',
-        password: 'TestPass123!',
-        confirmPassword: 'TestPass123!',
+        email: "test@example.com",
+        username: "testuser",
+        password: "TestPass123!",
+        confirmPassword: "TestPass123!",
       };
-      
+
       const result = registerSchema.safeParse(validData);
       expect(result.success).toBe(true);
     });
 
-    it('should reject weak password', () => {
+    it("should reject weak password", () => {
       const invalidData = {
-        email: 'test@example.com',
-        username: 'testuser',
-        password: 'weak',
-        confirmPassword: 'weak',
+        email: "test@example.com",
+        username: "testuser",
+        password: "weak",
+        confirmPassword: "weak",
       };
-      
+
       const result = registerSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain('at least 8 characters');
+        expect(result.error.issues[0].message).toContain(
+          "at least 8 characters"
+        );
       }
     });
 
-    it('should reject password without uppercase', () => {
+    it("should reject password without uppercase", () => {
       const invalidData = {
-        email: 'test@example.com',
-        username: 'testuser',
-        password: 'testpass123!',
-        confirmPassword: 'testpass123!',
+        email: "test@example.com",
+        username: "testuser",
+        password: "testpass123!",
+        confirmPassword: "testpass123!",
       };
-      
+
       const result = registerSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain('uppercase letter');
+        expect(result.error.issues[0].message).toContain("uppercase letter");
       }
     });
 
-    it('should reject mismatched passwords', () => {
+    it("should reject mismatched passwords", () => {
       const invalidData = {
-        email: 'test@example.com',
-        username: 'testuser',
-        password: 'TestPass123!',
-        confirmPassword: 'DifferentPass123!',
+        email: "test@example.com",
+        username: "testuser",
+        password: "TestPass123!",
+        confirmPassword: "DifferentPass123!",
       };
-      
+
       const result = registerSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -103,83 +105,87 @@ describe('validation schemas', () => {
       }
     });
 
-    it('should reject short username', () => {
+    it("should reject short username", () => {
       const invalidData = {
-        email: 'test@example.com',
-        username: 'ab',
-        password: 'TestPass123!',
-        confirmPassword: 'TestPass123!',
+        email: "test@example.com",
+        username: "ab",
+        password: "TestPass123!",
+        confirmPassword: "TestPass123!",
       };
-      
+
       const result = registerSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain('at least 3 characters');
+        expect(result.error.issues[0].message).toContain(
+          "at least 3 characters"
+        );
       }
     });
 
-    it('should reject username with invalid characters', () => {
+    it("should reject username with invalid characters", () => {
       const invalidData = {
-        email: 'test@example.com',
-        username: 'test@user',
-        password: 'TestPass123!',
-        confirmPassword: 'TestPass123!',
+        email: "test@example.com",
+        username: "test@user",
+        password: "TestPass123!",
+        confirmPassword: "TestPass123!",
       };
-      
+
       const result = registerSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain('letters, numbers, underscores, and hyphens');
+        expect(result.error.issues[0].message).toContain(
+          "letters, numbers, underscores, and hyphens"
+        );
       }
     });
   });
 
-  describe('updateProfileSchema', () => {
-    it('should validate partial update', () => {
+  describe("updateProfileSchema", () => {
+    it("should validate partial update", () => {
       const validData = {
-        email: 'new@example.com',
+        email: "new@example.com",
       };
-      
+
       const result = updateProfileSchema.safeParse(validData);
       expect(result.success).toBe(true);
     });
 
-    it('should validate empty update', () => {
+    it("should validate empty update", () => {
       const validData = {};
-      
+
       const result = updateProfileSchema.safeParse(validData);
       expect(result.success).toBe(true);
     });
 
-    it('should reject invalid email in update', () => {
+    it("should reject invalid email in update", () => {
       const invalidData = {
-        email: 'invalid-email',
+        email: "invalid-email",
       };
-      
+
       const result = updateProfileSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
     });
   });
 
-  describe('changePasswordSchema', () => {
-    it('should validate correct password change data', () => {
+  describe("changePasswordSchema", () => {
+    it("should validate correct password change data", () => {
       const validData = {
-        currentPassword: 'OldPass123!',
-        newPassword: 'NewPass123!',
-        confirmPassword: 'NewPass123!',
+        currentPassword: "OldPass123!",
+        newPassword: "NewPass123!",
+        confirmPassword: "NewPass123!",
       };
-      
+
       const result = changePasswordSchema.safeParse(validData);
       expect(result.success).toBe(true);
     });
 
-    it('should reject when new passwords do not match', () => {
+    it("should reject when new passwords do not match", () => {
       const invalidData = {
-        currentPassword: 'OldPass123!',
-        newPassword: 'NewPass123!',
-        confirmPassword: 'DifferentPass123!',
+        currentPassword: "OldPass123!",
+        newPassword: "NewPass123!",
+        confirmPassword: "DifferentPass123!",
       };
-      
+
       const result = changePasswordSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -187,17 +193,19 @@ describe('validation schemas', () => {
       }
     });
 
-    it('should reject weak new password', () => {
+    it("should reject weak new password", () => {
       const invalidData = {
-        currentPassword: 'OldPass123!',
-        newPassword: 'weak',
-        confirmPassword: 'weak',
+        currentPassword: "OldPass123!",
+        newPassword: "weak",
+        confirmPassword: "weak",
       };
-      
+
       const result = changePasswordSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain('at least 8 characters');
+        expect(result.error.issues[0].message).toContain(
+          "at least 8 characters"
+        );
       }
     });
   });

@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Form, Input, Button, Card, Typography, Divider } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import useAuthStore from '../stores/authStore';
-import { loginSchema } from '../utils/validation';
-import type { LoginFormData } from '../utils/validation';
+import { useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Form, Input, Button, Card, Typography, Divider } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import useAuthStore from "../stores/authStore";
+import { loginSchema } from "../utils/validation";
+import type { LoginFormData } from "../utils/validation";
 
 const { Title, Text } = Typography;
 
@@ -14,8 +14,8 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login, isLoading, isAuthenticated, clearError } = useAuthStore();
-  
-  const from = location.state?.from?.pathname || '/dashboard';
+
+  const from = location.state?.from?.pathname || "/dashboard";
 
   const {
     control,
@@ -24,8 +24,8 @@ const Login: React.FC = () => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -50,9 +50,11 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-sm" style={{ maxWidth: '360px' }}>
+      <Card className="w-full max-w-sm" style={{ maxWidth: "360px" }}>
         <div className="text-center mb-6">
-          <Title level={2} className="mb-2">Welcome Back</Title>
+          <Title level={2} className="mb-2">
+            Welcome Back
+          </Title>
           <Text type="secondary">Sign in to your account</Text>
         </div>
 
@@ -67,7 +69,7 @@ const Login: React.FC = () => {
             render={({ field }) => (
               <Form.Item
                 label="Email"
-                validateStatus={errors.email ? 'error' : ''}
+                validateStatus={errors.email ? "error" : ""}
                 help={errors.email?.message}
               >
                 <Input
@@ -87,7 +89,7 @@ const Login: React.FC = () => {
             render={({ field }) => (
               <Form.Item
                 label="Password"
-                validateStatus={errors.password ? 'error' : ''}
+                validateStatus={errors.password ? "error" : ""}
                 help={errors.password?.message}
               >
                 <Input.Password
@@ -117,8 +119,11 @@ const Login: React.FC = () => {
 
           <div className="text-center">
             <Text>
-              Don't have an account?{' '}
-              <Link to="/register" className="text-blue-600 hover:text-blue-500">
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="text-blue-600 hover:text-blue-500"
+              >
                 Sign up
               </Link>
             </Text>

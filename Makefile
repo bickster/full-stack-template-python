@@ -1,5 +1,8 @@
-.PHONY: help install install-dev serve-api serve-frontend test test-cov lint format type-check \
-        migrate migrate-create build docker-build docker-up docker-down clean
+.PHONY: help install install-dev serve-api serve-frontend test test-cov test-unit test-integration \
+        test-functional test-all test-frontend test-frontend-watch lint format format-check type-check \
+        security-check migrate migrate-create migrate-down build build-sdk-python build-sdk-typescript \
+        docker-build docker-up docker-down docker-logs docker-ps docker-clean db-shell db-backup \
+        db-restore clean setup-dev ci-test
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -18,26 +21,35 @@ install-dev: ## Install development dependencies
 	pre-commit install
 
 serve-api: ## Run development API server
-	uvicorn app.api.main:app --reload --host 0.0.0.0 --port 8000
+	PYTHONPATH=./src uvicorn app.api.main:app --reload --host 0.0.0.0 --port 8000
 
 serve-frontend: ## Run development frontend server
 	cd ui && npm run dev
 
 # Testing
 test: ## Run tests
-	pytest tests/unit tests/integration -v
+	PYTHONPATH=./src pytest tests/unit tests/integration -v
 
 test-cov: ## Run tests with coverage
-	pytest --cov=src --cov-report=html --cov-report=term-missing
+	PYTHONPATH=./src pytest --cov=src --cov-report=html --cov-report=term-missing
 
 test-unit: ## Run unit tests only
-	pytest tests/unit -v -m unit
+	PYTHONPATH=./src pytest tests/unit -v -m unit
 
 test-integration: ## Run integration tests only
-	pytest tests/integration -v -m integration
+	PYTHONPATH=./src pytest tests/integration -v -m integration
 
 test-functional: ## Run functional tests only
-	pytest tests/functional -v -m functional
+	PYTHONPATH=./src pytest tests/functional -v -m functional
+
+test-all: ## Run all tests (unit, integration, functional)
+	PYTHONPATH=./src pytest tests -v
+
+test-frontend: ## Run frontend tests
+	cd ui && npm run test:run
+
+test-frontend-watch: ## Run frontend tests in watch mode
+	cd ui && npm test
 
 # Code Quality
 lint: ## Run all linters
@@ -51,8 +63,14 @@ format: ## Format code
 	isort src tests
 	cd ui && npm run format
 
+format-check: ## Check code formatting
+	black --check src tests
+	isort --check-only src tests
+	cd ui && npm run format:check
+
 type-check: ## Run type checking
 	mypy src
+	cd ui && npm run type-check
 
 security-check: ## Run security checks
 	pip-audit

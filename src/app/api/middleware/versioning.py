@@ -1,6 +1,7 @@
 """API versioning middleware."""
 
-from typing import Dict, Any
+from typing import Any, Dict
+
 from fastapi import HTTPException, Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   Typography,
@@ -10,15 +10,15 @@ import {
   Modal,
   Alert,
   notification,
-} from 'antd';
+} from "antd";
 import {
   BellOutlined,
   MailOutlined,
   SecurityScanOutlined,
   DeleteOutlined,
   ExclamationCircleOutlined,
-} from '@ant-design/icons';
-import useAuthStore from '../stores/authStore';
+} from "@ant-design/icons";
+import useAuthStore from "../stores/authStore";
 
 const { Title, Text, Paragraph } = Typography;
 const { confirm } = Modal;
@@ -35,20 +35,22 @@ const Settings: React.FC = () => {
 
   const handleDeleteAccount = () => {
     confirm({
-      title: 'Are you sure you want to delete your account?',
+      title: "Are you sure you want to delete your account?",
       icon: <ExclamationCircleOutlined />,
-      content: 'This action cannot be undone. All your data will be permanently deleted.',
-      okText: 'Yes, Delete Account',
-      okType: 'danger',
-      cancelText: 'Cancel',
+      content:
+        "This action cannot be undone. All your data will be permanently deleted.",
+      okText: "Yes, Delete Account",
+      okType: "danger",
+      cancelText: "Cancel",
       onOk: async () => {
         try {
           await deleteAccount();
-          navigate('/login');
+          navigate("/login");
         } catch {
           notification.error({
-            message: 'Failed to delete account',
-            description: 'An error occurred while deleting your account. Please try again.',
+            message: "Failed to delete account",
+            description:
+              "An error occurred while deleting your account. Please try again.",
           });
         }
       },
@@ -70,7 +72,7 @@ const Settings: React.FC = () => {
               Notification Preferences
             </Title>
           </div>
-          
+
           <Space direction="vertical" size="middle" className="w-full">
             <div className="flex items-center justify-between">
               <div>
@@ -188,7 +190,7 @@ const Settings: React.FC = () => {
               <Text strong>Email Verification</Text>
               <br />
               <Text type="secondary">
-                Status: {user?.is_verified ? 'Verified' : 'Not Verified'}
+                Status: {user?.is_verified ? "Verified" : "Not Verified"}
               </Text>
               {!user?.is_verified && (
                 <Button type="link" className="p-0 mt-1" disabled>
@@ -202,9 +204,7 @@ const Settings: React.FC = () => {
             <div>
               <Text strong>Export Data</Text>
               <br />
-              <Text type="secondary">
-                Download a copy of your data
-              </Text>
+              <Text type="secondary">Download a copy of your data</Text>
               <br />
               <Button className="mt-2" disabled>
                 Request Data Export (Coming Soon)
@@ -229,7 +229,8 @@ const Settings: React.FC = () => {
               Delete Account
             </Title>
             <Paragraph type="secondary">
-              Once you delete your account, there is no going back. Please be certain.
+              Once you delete your account, there is no going back. Please be
+              certain.
             </Paragraph>
             <Button danger onClick={handleDeleteAccount}>
               Delete Account

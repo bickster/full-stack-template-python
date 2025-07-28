@@ -1,24 +1,21 @@
-import { useState } from 'react';
-import { Card, Form, Input, Button, Typography, message, Tabs } from 'antd';
-import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import useAuthStore from '../stores/authStore';
-import {
-  updateProfileSchema,
-  changePasswordSchema,
-} from '../utils/validation';
+import { useState } from "react";
+import { Card, Form, Input, Button, Typography, message, Tabs } from "antd";
+import { UserOutlined, MailOutlined, LockOutlined } from "@ant-design/icons";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import useAuthStore from "../stores/authStore";
+import { updateProfileSchema, changePasswordSchema } from "../utils/validation";
 import type {
   UpdateProfileFormData,
   ChangePasswordFormData,
-} from '../utils/validation';
+} from "../utils/validation";
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
 
 const Profile: React.FC = () => {
   const { user, updateUser, changePassword, isLoading } = useAuthStore();
-  const [activeTab, setActiveTab] = useState('1');
+  const [activeTab, setActiveTab] = useState("1");
 
   // Profile form
   const {
@@ -28,8 +25,8 @@ const Profile: React.FC = () => {
   } = useForm<UpdateProfileFormData>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
-      email: user?.email || '',
-      username: user?.username || '',
+      email: user?.email || "",
+      username: user?.username || "",
     },
   });
 
@@ -42,16 +39,16 @@ const Profile: React.FC = () => {
   } = useForm<ChangePasswordFormData>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: {
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     },
   });
 
   const onProfileSubmit = async (data: UpdateProfileFormData) => {
     try {
       await updateUser(data);
-      message.success('Profile updated successfully');
+      message.success("Profile updated successfully");
     } catch {
       // Error is handled by the store
     }
@@ -64,7 +61,7 @@ const Profile: React.FC = () => {
         new_password: data.newPassword,
       });
       resetPasswordForm();
-      message.success('Password changed successfully');
+      message.success("Password changed successfully");
     } catch {
       // Error is handled by the store
     }
@@ -90,7 +87,7 @@ const Profile: React.FC = () => {
                 render={({ field }) => (
                   <Form.Item
                     label="Email"
-                    validateStatus={profileErrors.email ? 'error' : ''}
+                    validateStatus={profileErrors.email ? "error" : ""}
                     help={profileErrors.email?.message}
                   >
                     <Input
@@ -109,7 +106,7 @@ const Profile: React.FC = () => {
                 render={({ field }) => (
                   <Form.Item
                     label="Username"
-                    validateStatus={profileErrors.username ? 'error' : ''}
+                    validateStatus={profileErrors.username ? "error" : ""}
                     help={profileErrors.username?.message}
                   >
                     <Input
@@ -147,7 +144,9 @@ const Profile: React.FC = () => {
                 render={({ field }) => (
                   <Form.Item
                     label="Current Password"
-                    validateStatus={passwordErrors.currentPassword ? 'error' : ''}
+                    validateStatus={
+                      passwordErrors.currentPassword ? "error" : ""
+                    }
                     help={passwordErrors.currentPassword?.message}
                   >
                     <Input.Password
@@ -166,7 +165,7 @@ const Profile: React.FC = () => {
                 render={({ field }) => (
                   <Form.Item
                     label="New Password"
-                    validateStatus={passwordErrors.newPassword ? 'error' : ''}
+                    validateStatus={passwordErrors.newPassword ? "error" : ""}
                     help={passwordErrors.newPassword?.message}
                   >
                     <Input.Password
@@ -185,7 +184,9 @@ const Profile: React.FC = () => {
                 render={({ field }) => (
                   <Form.Item
                     label="Confirm New Password"
-                    validateStatus={passwordErrors.confirmPassword ? 'error' : ''}
+                    validateStatus={
+                      passwordErrors.confirmPassword ? "error" : ""
+                    }
                     help={passwordErrors.confirmPassword?.message}
                   >
                     <Input.Password

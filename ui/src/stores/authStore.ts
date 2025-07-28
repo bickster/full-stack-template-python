@@ -1,14 +1,14 @@
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
 import type {
   AuthStore,
   LoginRequest,
   RegisterRequest,
   UserUpdate,
   PasswordChangeRequest,
-} from '../types';
-import { authApi, usersApi } from '../services/api';
-import type { AxiosError } from 'axios';
+} from "../types";
+import { authApi, usersApi } from "../services/api";
+import type { AxiosError } from "axios";
 
 const useAuthStore = create<AuthStore>()(
   devtools(
@@ -26,14 +26,15 @@ const useAuthStore = create<AuthStore>()(
           set({ isLoading: true, error: null });
           try {
             const response = await authApi.login(credentials);
-            const { user, access_token, refresh_token, expires_in } = response.data;
-            
+            const { user, access_token, refresh_token, expires_in } =
+              response.data;
+
             const tokens = {
               access_token,
               refresh_token,
               expires_at: Date.now() + expires_in * 1000,
             };
-            
+
             set({
               user,
               tokens,
@@ -41,14 +42,14 @@ const useAuthStore = create<AuthStore>()(
               isLoading: false,
               error: null,
             });
-            
+
             // Store tokens separately for interceptor
-            localStorage.setItem('auth-tokens', JSON.stringify(tokens));
-            localStorage.setItem('auth-user', JSON.stringify(user));
-            
+            localStorage.setItem("auth-tokens", JSON.stringify(tokens));
+            localStorage.setItem("auth-user", JSON.stringify(user));
           } catch (error) {
             const axiosError = error as AxiosError<{ error: string }>;
-            const errorMessage = axiosError.response?.data?.error || 'Login failed';
+            const errorMessage =
+              axiosError.response?.data?.error || "Login failed";
             set({
               isLoading: false,
               error: errorMessage,
@@ -64,7 +65,8 @@ const useAuthStore = create<AuthStore>()(
             set({ isLoading: false, error: null });
           } catch (error) {
             const axiosError = error as AxiosError<{ error: string }>;
-            const errorMessage = axiosError.response?.data?.error || 'Registration failed';
+            const errorMessage =
+              axiosError.response?.data?.error || "Registration failed";
             set({
               isLoading: false,
               error: errorMessage,
@@ -79,7 +81,7 @@ const useAuthStore = create<AuthStore>()(
             await authApi.logout();
           } catch (error) {
             // Ignore logout errors
-            console.error('Logout error:', error);
+            console.error("Logout error:", error);
           } finally {
             // Clear state regardless
             set({
@@ -89,34 +91,33 @@ const useAuthStore = create<AuthStore>()(
               isLoading: false,
               error: null,
             });
-            
+
             // Clear storage
-            localStorage.removeItem('auth-tokens');
-            localStorage.removeItem('auth-user');
-            
+            localStorage.removeItem("auth-tokens");
+            localStorage.removeItem("auth-user");
           }
         },
 
         refreshToken: async () => {
           const { tokens } = get();
           if (!tokens?.refresh_token) {
-            throw new Error('No refresh token available');
+            throw new Error("No refresh token available");
           }
 
           try {
             const response = await authApi.refresh(tokens.refresh_token);
             const { access_token, expires_in } = response.data;
-            
+
             const newTokens = {
               ...tokens,
               access_token,
               expires_at: Date.now() + expires_in * 1000,
             };
-            
+
             set({ tokens: newTokens });
-            
+
             // Update stored tokens
-            localStorage.setItem('auth-tokens', JSON.stringify(newTokens));
+            localStorage.setItem("auth-tokens", JSON.stringify(newTokens));
           } catch (error) {
             // Token refresh failed, logout
             get().logout();
@@ -129,19 +130,19 @@ const useAuthStore = create<AuthStore>()(
           try {
             const response = await usersApi.updateMe(data);
             const updatedUser = response.data;
-            
+
             set({
               user: updatedUser,
               isLoading: false,
               error: null,
             });
-            
+
             // Update stored user
-            localStorage.setItem('auth-user', JSON.stringify(updatedUser));
-            
+            localStorage.setItem("auth-user", JSON.stringify(updatedUser));
           } catch (error) {
             const axiosError = error as AxiosError<{ error: string }>;
-            const errorMessage = axiosError.response?.data?.error || 'Update failed';
+            const errorMessage =
+              axiosError.response?.data?.error || "Update failed";
             set({
               isLoading: false,
               error: errorMessage,
@@ -157,7 +158,8 @@ const useAuthStore = create<AuthStore>()(
             set({ isLoading: false, error: null });
           } catch (error) {
             const axiosError = error as AxiosError<{ error: string }>;
-            const errorMessage = axiosError.response?.data?.error || 'Password change failed';
+            const errorMessage =
+              axiosError.response?.data?.error || "Password change failed";
             set({
               isLoading: false,
               error: errorMessage,
@@ -170,7 +172,7 @@ const useAuthStore = create<AuthStore>()(
           set({ isLoading: true, error: null });
           try {
             await usersApi.deleteMe();
-            
+
             // Clear state
             set({
               user: null,
@@ -179,14 +181,14 @@ const useAuthStore = create<AuthStore>()(
               isLoading: false,
               error: null,
             });
-            
+
             // Clear storage
-            localStorage.removeItem('auth-tokens');
-            localStorage.removeItem('auth-user');
-            
+            localStorage.removeItem("auth-tokens");
+            localStorage.removeItem("auth-user");
           } catch (error) {
             const axiosError = error as AxiosError<{ error: string }>;
-            const errorMessage = axiosError.response?.data?.error || 'Account deletion failed';
+            const errorMessage =
+              axiosError.response?.data?.error || "Account deletion failed";
             set({
               isLoading: false,
               error: errorMessage,
@@ -196,11 +198,11 @@ const useAuthStore = create<AuthStore>()(
         },
 
         clearError: () => set({ error: null }),
-        
+
         setLoading: (loading: boolean) => set({ isLoading: loading }),
       }),
       {
-        name: 'auth-store',
+        name: "auth-store",
         partialize: (state) => ({
           user: state.user,
           tokens: state.tokens,

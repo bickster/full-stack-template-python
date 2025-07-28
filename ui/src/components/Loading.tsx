@@ -1,15 +1,15 @@
-import { Spin } from 'antd';
+import { Spin } from "antd";
 
 interface LoadingProps {
-  size?: 'small' | 'default' | 'large';
+  size?: "small" | "default" | "large";
   tip?: string;
   fullScreen?: boolean;
 }
 
-const Loading: React.FC<LoadingProps> = ({ 
-  size = 'default', 
-  tip = 'Loading...', 
-  fullScreen = false 
+const Loading: React.FC<LoadingProps> = ({
+  size = "default",
+  tip = "Loading...",
+  fullScreen = false,
 }) => {
   const content = <Spin size={size} tip={tip} />;
 
@@ -21,11 +21,7 @@ const Loading: React.FC<LoadingProps> = ({
     );
   }
 
-  return (
-    <div className="flex items-center justify-center p-8">
-      {content}
-    </div>
-  );
+  return <div className="flex items-center justify-center p-8">{content}</div>;
 };
 
 export default Loading;

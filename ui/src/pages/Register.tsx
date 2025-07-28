@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, Typography, Divider, Alert } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import useAuthStore from '../stores/authStore';
-import { registerSchema } from '../utils/validation';
-import type { RegisterFormData } from '../utils/validation';
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Form, Input, Button, Card, Typography, Divider, Alert } from "antd";
+import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import useAuthStore from "../stores/authStore";
+import { registerSchema } from "../utils/validation";
+import type { RegisterFormData } from "../utils/validation";
 
 const { Title, Text } = Typography;
 
@@ -21,16 +21,16 @@ const Register: React.FC = () => {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      email: '',
-      username: '',
-      password: '',
-      confirmPassword: '',
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
@@ -39,7 +39,7 @@ const Register: React.FC = () => {
   }, [clearError]);
 
   const onSubmit = async (data: RegisterFormData) => {
-    console.log('Form submitted with data:', data);
+    console.log("Form submitted with data:", data);
     try {
       await register({
         email: data.email,
@@ -47,18 +47,20 @@ const Register: React.FC = () => {
         password: data.password,
       });
       // Redirect to login page after successful registration
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
       // Error is handled by the store
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-sm" style={{ maxWidth: '360px' }}>
+      <Card className="w-full max-w-sm" style={{ maxWidth: "360px" }}>
         <div className="text-center mb-6">
-          <Title level={2} className="mb-2">Create Account</Title>
+          <Title level={2} className="mb-2">
+            Create Account
+          </Title>
           <Text type="secondary">Sign up for a new account</Text>
         </div>
 
@@ -81,7 +83,7 @@ const Register: React.FC = () => {
             render={({ field }) => (
               <Form.Item
                 label="Email"
-                validateStatus={errors.email ? 'error' : ''}
+                validateStatus={errors.email ? "error" : ""}
                 help={errors.email?.message}
               >
                 <Input
@@ -101,7 +103,7 @@ const Register: React.FC = () => {
             render={({ field }) => (
               <Form.Item
                 label="Username"
-                validateStatus={errors.username ? 'error' : ''}
+                validateStatus={errors.username ? "error" : ""}
                 help={errors.username?.message}
               >
                 <Input
@@ -121,7 +123,7 @@ const Register: React.FC = () => {
             render={({ field }) => (
               <Form.Item
                 label="Password"
-                validateStatus={errors.password ? 'error' : ''}
+                validateStatus={errors.password ? "error" : ""}
                 help={errors.password?.message}
               >
                 <Input.Password
@@ -141,7 +143,7 @@ const Register: React.FC = () => {
             render={({ field }) => (
               <Form.Item
                 label="Confirm Password"
-                validateStatus={errors.confirmPassword ? 'error' : ''}
+                validateStatus={errors.confirmPassword ? "error" : ""}
                 help={errors.confirmPassword?.message}
               >
                 <Input.Password
@@ -171,7 +173,7 @@ const Register: React.FC = () => {
 
           <div className="text-center">
             <Text>
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Link to="/login" className="text-blue-600 hover:text-blue-500">
                 Sign in
               </Link>

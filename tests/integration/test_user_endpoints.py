@@ -98,7 +98,7 @@ class TestUserEndpoints:
     async def test_change_password_success(
         self,
         client: AsyncClient,
-        async_session: AsyncSession,
+        db_session: AsyncSession,
         test_user: User,
         auth_headers: dict,
     ):
@@ -117,7 +117,7 @@ class TestUserEndpoints:
         assert data["message"] == "Password changed successfully"
 
         # Verify password was changed
-        await async_session.refresh(test_user)
+        await db_session.refresh(test_user)
         assert verify_password("NewPass123!", test_user.hashed_password)
 
     async def test_change_password_wrong_current(
@@ -161,7 +161,7 @@ class TestUserEndpoints:
     async def test_delete_account_success(
         self,
         client: AsyncClient,
-        async_session: AsyncSession,
+        db_session: AsyncSession,
         test_user: User,
         auth_headers: dict,
     ):
@@ -176,21 +176,21 @@ class TestUserEndpoints:
         assert data["message"] == "User account deleted successfully"
 
         # Verify user is soft deleted
-        await async_session.refresh(test_user)
+        await db_session.refresh(test_user)
         assert test_user.deleted_at is not None
         assert test_user.is_active is False
 
     async def test_delete_account_unverified_user(
         self,
         client: AsyncClient,
-        async_session: AsyncSession,
+        db_session: AsyncSession,
         test_user: User,
         auth_headers: dict,
     ):
         """Test account deletion requires verified email."""
         # Make user unverified
         test_user.is_verified = False
-        await async_session.commit()
+        await db_session.commit()
 
         response = await client.delete(
             "/api/v1/users/me",

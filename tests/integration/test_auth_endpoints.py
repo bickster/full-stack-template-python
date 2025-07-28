@@ -13,7 +13,7 @@ class TestAuthEndpoints:
     """Test authentication endpoints."""
 
     async def test_register_success(
-        self, client: AsyncClient, async_session: AsyncSession
+        self, client: AsyncClient, db_session: AsyncSession
     ):
         """Test successful user registration."""
         response = await client.post(
@@ -33,7 +33,7 @@ class TestAuthEndpoints:
         assert "id" in data["user"]
 
         # Verify user in database
-        user = await async_session.get(User, data["user"]["id"])
+        user = await db_session.get(User, data["user"]["id"])
         assert user is not None
         assert user.email == "newuser@example.com"
         assert verify_password("NewPass123!", user.hashed_password)
@@ -142,12 +142,12 @@ class TestAuthEndpoints:
         assert data["code"] == "INVALID_CREDENTIALS"
 
     async def test_login_inactive_user(
-        self, client: AsyncClient, async_session: AsyncSession, test_user: User
+        self, client: AsyncClient, db_session: AsyncSession, test_user: User
     ):
         """Test login with inactive user."""
         # Make user inactive
         test_user.is_active = False
-        await async_session.commit()
+        await db_session.commit()
 
         response = await client.post(
             "/api/v1/auth/login",

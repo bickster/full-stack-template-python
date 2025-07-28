@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 import {
   Layout as AntLayout,
   Menu,
@@ -8,7 +8,7 @@ import {
   Space,
   Button,
   theme,
-} from 'antd';
+} from "antd";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -16,9 +16,9 @@ import {
   SettingOutlined,
   LogoutOutlined,
   DashboardOutlined,
-} from '@ant-design/icons';
-import type { MenuProps } from 'antd';
-import useAuthStore from '../stores/authStore';
+} from "@ant-design/icons";
+import type { MenuProps } from "antd";
+import useAuthStore from "../stores/authStore";
 
 const { Header, Sider, Content } = AntLayout;
 
@@ -32,47 +32,47 @@ const Layout: React.FC = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate("/login");
   };
 
-  const userMenuItems: MenuProps['items'] = [
+  const userMenuItems: MenuProps["items"] = [
     {
-      key: 'profile',
+      key: "profile",
       icon: <UserOutlined />,
-      label: 'Profile',
-      onClick: () => navigate('/profile'),
+      label: "Profile",
+      onClick: () => navigate("/profile"),
     },
     {
-      key: 'settings',
+      key: "settings",
       icon: <SettingOutlined />,
-      label: 'Settings',
-      onClick: () => navigate('/settings'),
+      label: "Settings",
+      onClick: () => navigate("/settings"),
     },
     {
-      type: 'divider',
+      type: "divider",
     },
     {
-      key: 'logout',
+      key: "logout",
       icon: <LogoutOutlined />,
-      label: 'Logout',
+      label: "Logout",
       danger: true,
       onClick: handleLogout,
     },
   ];
 
-  const sideMenuItems: MenuProps['items'] = [
+  const sideMenuItems: MenuProps["items"] = [
     {
-      key: 'dashboard',
+      key: "dashboard",
       icon: <DashboardOutlined />,
       label: <Link to="/dashboard">Dashboard</Link>,
     },
     {
-      key: 'profile',
+      key: "profile",
       icon: <UserOutlined />,
       label: <Link to="/profile">Profile</Link>,
     },
     {
-      key: 'settings',
+      key: "settings",
       icon: <SettingOutlined />,
       label: <Link to="/settings">Settings</Link>,
     },
@@ -91,13 +91,13 @@ const Layout: React.FC = () => {
       >
         <div className="h-16 flex items-center justify-center">
           <h1 className="text-white text-xl font-bold">
-            {collapsed ? 'APP' : 'FullStack App'}
+            {collapsed ? "APP" : "FullStack App"}
           </h1>
         </div>
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['dashboard']}
+          defaultSelectedKeys={["dashboard"]}
           items={sideMenuItems}
         />
       </Sider>
@@ -115,17 +115,17 @@ const Layout: React.FC = () => {
             onClick={() => setCollapsed(!collapsed)}
             className="text-lg w-16 h-16"
           />
-          
+
           <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
             <Space className="cursor-pointer">
               <Avatar icon={<UserOutlined />} />
-              <span className="font-medium">{user?.username || 'User'}</span>
+              <span className="font-medium">{user?.username || "User"}</span>
             </Space>
           </Dropdown>
         </Header>
         <Content
           style={{
-            margin: '24px 16px',
+            margin: "24px 16px",
             padding: 24,
             minHeight: 280,
             background: colorBgContainer,
