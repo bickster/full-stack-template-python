@@ -57,7 +57,10 @@ class TestAppEndpoints:
         # CORS headers are only present when BACKEND_CORS_ORIGINS is configured
         # Skip this check in test environment where CORS is not configured
         # Just verify the request completes
-        assert response.status_code in [401, 422]  # Expected for invalid credentials
+        assert response.status_code in [
+            401,
+            422,
+        ]  # Expected for invalid credentials
 
     async def test_security_headers(self, client: AsyncClient):
         """Test security headers are present."""
