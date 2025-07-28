@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
+import type { AxiosRequestConfig } from "axios";
 import useAuthStore from "./authStore";
 import { authApi, usersApi } from "../services/api";
 import { mockUser, mockTokens } from "../test/utils";
@@ -60,7 +61,7 @@ describe("authStore", () => {
     status: 200,
     statusText: 'OK',
     headers: {},
-    config: {} as any,
+    config: {} as AxiosRequestConfig,
   });
 
   describe("login", () => {
