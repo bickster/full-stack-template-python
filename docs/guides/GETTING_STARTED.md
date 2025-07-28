@@ -60,17 +60,17 @@ The API uses JWT (JSON Web Tokens) for authentication.
 sequenceDiagram
     participant Client
     participant API
-    
+
     Client->>API: POST /api/v1/auth/login
     Note over Client: {username, password}
     API-->>Client: {access_token, refresh_token}
-    
+
     Client->>API: GET /api/v1/users/me
     Note over Client: Authorization: Bearer {access_token}
     API-->>Client: User data
-    
+
     Note over Client: Access token expires
-    
+
     Client->>API: POST /api/v1/auth/refresh
     Note over Client: {refresh_token}
     API-->>Client: {access_token, refresh_token}
@@ -189,7 +189,7 @@ try {
     password: 'password123',
     full_name: 'New User'
   });
-  
+
   // Auto-login
   await client.login({
     username: 'newuser',
@@ -215,7 +215,7 @@ try {
       'Authorization': `Bearer ${accessToken}`
     }
   });
-  
+
   if (response.status === 401) {
     // Token expired, refresh it
     const tokens = await refreshAccessToken(refreshToken);

@@ -170,7 +170,7 @@ async function demonstrateTokenRefreshCallback() {
       refreshCount++;
       console.log(`✓ Token refreshed (${refreshCount} times)`);
       console.log(`  New access token expires in: ${tokens.expiresIn}s`);
-      
+
       // You could sync tokens to other tabs/windows here
       window.postMessage({ type: 'token-refresh', tokens }, '*');
     },
@@ -202,7 +202,7 @@ async function demonstrateParallelRequests() {
   });
 
   console.time('parallel');
-  
+
   // Make multiple requests in parallel
   const [user1, user2, user3] = await Promise.all([
     client.users.getCurrentUser(),
@@ -273,7 +273,7 @@ async function demonstrateTypeSafeErrorHandling() {
   }
 
   const result = await loginSafe('demo@example.com', 'wrong-password');
-  
+
   if (result.success) {
     console.log('✓ Login successful');
   } else {

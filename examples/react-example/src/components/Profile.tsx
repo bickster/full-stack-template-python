@@ -10,21 +10,21 @@ interface ProfileProps {
 export function Profile({ user, onUpdate }: ProfileProps) {
   const apiClient = useContext(ApiContext);
   const [activeTab, setActiveTab] = useState('info');
-  
+
   // Profile form state
   const [profileData, setProfileData] = useState({
     email: user.email,
     username: user.username,
     fullName: user.full_name || ''
   });
-  
+
   // Password form state
   const [passwordData, setPasswordData] = useState({
     oldPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -37,7 +37,7 @@ export function Profile({ user, onUpdate }: ProfileProps) {
 
     try {
       const updateData: UpdateUserRequest = {};
-      
+
       if (profileData.email !== user.email) {
         updateData.email = profileData.email;
       }
@@ -70,7 +70,7 @@ export function Profile({ user, onUpdate }: ProfileProps) {
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       setError('New passwords do not match');
       return;
@@ -90,7 +90,7 @@ export function Profile({ user, onUpdate }: ProfileProps) {
         old_password: passwordData.oldPassword,
         new_password: passwordData.newPassword
       });
-      
+
       setMessage('Password changed successfully');
       setPasswordData({
         oldPassword: '',
@@ -140,19 +140,19 @@ export function Profile({ user, onUpdate }: ProfileProps) {
       <h2>Profile Settings</h2>
 
       <div className="tabs">
-        <button 
+        <button
           className={`tab ${activeTab === 'info' ? 'active' : ''}`}
           onClick={() => setActiveTab('info')}
         >
           Profile Information
         </button>
-        <button 
+        <button
           className={`tab ${activeTab === 'password' ? 'active' : ''}`}
           onClick={() => setActiveTab('password')}
         >
           Change Password
         </button>
-        <button 
+        <button
           className={`tab ${activeTab === 'danger' ? 'active' : ''}`}
           onClick={() => setActiveTab('danger')}
         >
@@ -257,8 +257,8 @@ export function Profile({ user, onUpdate }: ProfileProps) {
           <p>
             Once you delete your account, there is no going back. Please be certain.
           </p>
-          <button 
-            className="danger-button" 
+          <button
+            className="danger-button"
             onClick={handleDeleteAccount}
             disabled={loading}
           >

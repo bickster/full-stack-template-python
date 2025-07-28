@@ -1,9 +1,6 @@
 """Unit tests for custom exceptions."""
 
-from starlette.status import (
-    HTTP_401_UNAUTHORIZED,
-    HTTP_404_NOT_FOUND,
-)
+from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
 
 from app.core.exceptions import (
     AppException,

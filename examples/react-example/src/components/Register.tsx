@@ -48,7 +48,7 @@ export function Register({ onRegister }: RegisterProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -70,7 +70,7 @@ export function Register({ onRegister }: RegisterProps) {
     } catch (err) {
       if (err instanceof AxiosError) {
         const errorData = err.response?.data;
-        
+
         if (errorData?.code === 'VALIDATION_ERROR' && errorData.details?.errors) {
           const fieldErrors: Record<string, string> = {};
           for (const error of errorData.details.errors) {
@@ -105,9 +105,9 @@ export function Register({ onRegister }: RegisterProps) {
   return (
     <div className="auth-form">
       <h2>Register</h2>
-      
+
       {errors.form && <div className="error-message">{errors.form}</div>}
-      
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="email">Email</label>

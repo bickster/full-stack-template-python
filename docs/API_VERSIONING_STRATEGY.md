@@ -71,39 +71,39 @@ from typing import Optional
 
 class VersioningMiddleware:
     """Handle API versioning through headers and paths."""
-    
+
     SUPPORTED_VERSIONS = ["1.0", "1.1", "1.2"]
     DEFAULT_VERSION = "1.0"
-    
+
     async def __call__(self, request: Request, call_next):
         # Extract version from header
         header_version = request.headers.get("X-API-Version")
-        
+
         # Extract version from path
         path_parts = request.url.path.split("/")
         path_version = None
         if len(path_parts) > 2 and path_parts[2].startswith("v"):
             path_version = path_parts[2][1:]  # Remove 'v' prefix
-        
+
         # Determine final version
         version = header_version or f"{path_version}.0" if path_version else self.DEFAULT_VERSION
-        
+
         # Validate version
         if version not in self.SUPPORTED_VERSIONS:
             raise HTTPException(
                 status_code=400,
                 detail=f"Unsupported API version: {version}"
             )
-        
+
         # Store version in request state
         request.state.api_version = version
-        
+
         response = await call_next(request)
-        
+
         # Add version headers to response
         response.headers["X-API-Version"] = version
         response.headers["X-API-Deprecated"] = "false"
-        
+
         return response
 ```
 
@@ -116,25 +116,25 @@ from typing import Optional
 
 class UserResponse(BaseModel):
     """User response with version-specific fields."""
-    
+
     # Common fields (all versions)
     id: str
     username: str
     email: str
-    
+
     # v1.0+ fields
     is_active: bool
     created_at: datetime
     updated_at: datetime
-    
+
     # v1.1+ fields
     full_name: Optional[str] = None
     is_verified: bool = False
-    
+
     # v1.2+ fields
     last_login: Optional[datetime] = None
     preferences: Optional[dict] = None
-    
+
     @classmethod
     def from_orm_versioned(cls, obj, version: str):
         """Create response based on API version."""
@@ -146,15 +146,15 @@ class UserResponse(BaseModel):
             "created_at": obj.created_at,
             "updated_at": obj.updated_at,
         }
-        
+
         if version >= "1.1":
             data["full_name"] = obj.full_name
             data["is_verified"] = obj.is_verified
-            
+
         if version >= "1.2":
             data["last_login"] = obj.last_login
             data["preferences"] = obj.preferences
-            
+
         return cls(**data)
 ```
 
@@ -179,10 +179,10 @@ async def get_current_user_v2(
 ):
     """Get current user with optional statistics (v2 endpoint)."""
     response = UserResponseV2.from_orm(current_user)
-    
+
     if include_stats:
         response.stats = await get_user_stats(current_user.id)
-    
+
     return response
 ```
 
@@ -222,7 +222,7 @@ async def get_current_user_v2(
 v1.0 Released        : January 2024
 v2.0 Announced       : July 2024      (6 months notice)
 v2.0 Beta           : October 2024   (3 months testing)
-v2.0 Released       : January 2025   
+v2.0 Released       : January 2025
 v1.0 Deprecated     : January 2026   (12 months migration)
 v1.0 Sunset         : July 2026      (6 months grace)
 ```
@@ -242,7 +242,7 @@ X-API-Migration-Guide: https://docs.example.com/migration/v1-to-v2
 # src/app/api/middleware/deprecation.py
 class DeprecationMiddleware:
     """Add deprecation warnings to responses."""
-    
+
     DEPRECATED_ENDPOINTS = {
         "/api/v1/users/list": {
             "deprecated_date": "2026-01-01",
@@ -251,21 +251,21 @@ class DeprecationMiddleware:
             "migration_guide": "https://docs.example.com/migration/users-endpoint"
         }
     }
-    
+
     async def __call__(self, request: Request, call_next):
         response = await call_next(request)
-        
+
         # Check if endpoint is deprecated
         path = str(request.url.path)
         if path in self.DEPRECATED_ENDPOINTS:
             deprecation = self.DEPRECATED_ENDPOINTS[path]
-            
+
             response.headers["X-API-Deprecated"] = "true"
             response.headers["X-API-Deprecation-Date"] = deprecation["deprecated_date"]
             response.headers["X-API-Sunset-Date"] = deprecation["sunset_date"]
             response.headers["X-API-Alternative"] = deprecation["alternative"]
             response.headers["X-API-Migration-Guide"] = deprecation["migration_guide"]
-            
+
             # Log deprecation usage
             logger.warning(
                 "Deprecated endpoint used",
@@ -273,7 +273,7 @@ class DeprecationMiddleware:
                 client_id=request.headers.get("X-Client-ID"),
                 user_agent=request.headers.get("User-Agent")
             )
-        
+
         return response
 ```
 

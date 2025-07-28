@@ -30,38 +30,38 @@ export function Dashboard({ user }: DashboardProps) {
   return (
     <div className="dashboard">
       <h2>Dashboard</h2>
-      
+
       <div className="dashboard-grid">
         <div className="dashboard-card">
           <h3>User Information</h3>
           <dl>
             <dt>Username:</dt>
             <dd>{user.username}</dd>
-            
+
             <dt>Email:</dt>
             <dd>{user.email}</dd>
-            
+
             <dt>Full Name:</dt>
             <dd>{user.full_name || 'Not set'}</dd>
-            
+
             <dt>Account Status:</dt>
             <dd>
               <span className={`status ${user.is_active ? 'active' : 'inactive'}`}>
                 {user.is_active ? 'Active' : 'Inactive'}
               </span>
             </dd>
-            
+
             <dt>Email Verified:</dt>
             <dd>
               <span className={`status ${user.is_verified ? 'verified' : 'unverified'}`}>
                 {user.is_verified ? 'Yes' : 'No'}
               </span>
             </dd>
-            
+
             <dt>Member Since:</dt>
             <dd>{new Date(user.created_at).toLocaleDateString()}</dd>
           </dl>
-          
+
           <Link to="/profile" className="button">Edit Profile</Link>
         </div>
 
@@ -77,14 +77,14 @@ export function Dashboard({ user }: DashboardProps) {
                   {health.status}
                 </span>
               </dd>
-              
+
               <dt>Database:</dt>
               <dd>
                 <span className={`status ${health.database === 'connected' ? 'active' : 'inactive'}`}>
                   {health.database}
                 </span>
               </dd>
-              
+
               <dt>Version:</dt>
               <dd>{health.version}</dd>
             </dl>
@@ -121,10 +121,10 @@ export function Dashboard({ user }: DashboardProps) {
             <dl>
               <dt>User ID:</dt>
               <dd className="mono">{user.id}</dd>
-              
+
               <dt>Is Superuser:</dt>
               <dd>{user.is_superuser ? 'Yes' : 'No'}</dd>
-              
+
               <dt>Last Updated:</dt>
               <dd>{new Date(user.updated_at).toLocaleString()}</dd>
             </dl>

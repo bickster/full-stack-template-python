@@ -8,7 +8,7 @@ Implement a production-ready full-stack application based on CORE_FULLSTACK_TEMP
 **IMPORTANT**: Use this checklist to ensure all phases are completed. Each phase builds on the previous ones and should not be skipped.
 
 - [x] Phase 1: Project Foundation
-- [x] Phase 2: Database & Models  
+- [x] Phase 2: Database & Models
 - [x] Phase 3: Backend Core & Security
 - [x] Phase 4: Authentication API
 - [x] Phase 5: Frontend Foundation
@@ -355,7 +355,7 @@ For detailed testing setup and additional issues not covered in CLAUDE.md, see [
   ```python
   # ❌ Wrong
   id = Column(UUID, default=str(uuid.uuid4()))
-  
+
   # ✅ Correct
   id = Column(UUID, default=uuid.uuid4)
   ```
@@ -420,7 +420,7 @@ For detailed testing setup and additional issues not covered in CLAUDE.md, see [
 cat >> pytest.ini << 'EOF'
 [tool:pytest]
 addopts = --cov=src --cov-fail-under=80 --cov-report=html --cov-report=term-missing
-omit = 
+omit =
     */tests/*
     */migrations/*
     */config_production.py
@@ -440,7 +440,7 @@ echo "📊 Current coverage recorded - target is 80%"
 ```bash
 # Test all core modules to 95%+ coverage
 pytest tests/unit/test_security.py --cov=src/app/core/security --cov-report=term-missing
-pytest tests/unit/test_exceptions.py --cov=src/app/core/exceptions --cov-report=term-missing  
+pytest tests/unit/test_exceptions.py --cov=src/app/core/exceptions --cov-report=term-missing
 pytest tests/unit/test_utils.py --cov=src/app/core/utils --cov-report=term-missing
 
 # Verify core coverage
@@ -462,9 +462,9 @@ Add this test file content:
 """Comprehensive auth endpoint testing for 80% coverage."""
 
 class TestAuthEndpointsComplete:
-    
+
     # For EACH endpoint, test ALL scenarios:
-    
+
     # POST /api/v1/auth/register
     async def test_register_success(self, client): pass  # 201
     async def test_register_duplicate_email(self, client): pass  # 409
@@ -472,37 +472,37 @@ class TestAuthEndpointsComplete:
     async def test_register_weak_password(self, client): pass  # 422
     async def test_register_invalid_email(self, client): pass  # 422
     async def test_register_missing_fields(self, client): pass  # 422
-    
-    # POST /api/v1/auth/login  
+
+    # POST /api/v1/auth/login
     async def test_login_success(self, client): pass  # 200
     async def test_login_wrong_password(self, client): pass  # 401
     async def test_login_nonexistent_user(self, client): pass  # 401
     async def test_login_inactive_user(self, client): pass  # 401
     async def test_login_rate_limited(self, client): pass  # 429
     async def test_login_missing_fields(self, client): pass  # 422
-    
+
     # POST /api/v1/auth/refresh
     async def test_refresh_success(self, client): pass  # 200
     async def test_refresh_invalid_token(self, client): pass  # 401
     async def test_refresh_expired_token(self, client): pass  # 401
     async def test_refresh_revoked_token(self, client): pass  # 401
     async def test_refresh_malformed_token(self, client): pass  # 401
-    
+
     # POST /api/v1/auth/logout
-    async def test_logout_success(self, client): pass  # 200  
+    async def test_logout_success(self, client): pass  # 200
     async def test_logout_invalid_token(self, client): pass  # 401
     async def test_logout_already_logged_out(self, client): pass  # 401
-    
+
     # GET /api/v1/users/me
     async def test_get_profile_success(self, client): pass  # 200
     async def test_get_profile_unauthorized(self, client): pass  # 401
-    
-    # PUT /api/v1/users/me  
+
+    # PUT /api/v1/users/me
     async def test_update_profile_success(self, client): pass  # 200
     async def test_update_duplicate_email(self, client): pass  # 409
     async def test_update_invalid_data(self, client): pass  # 422
     async def test_update_unauthorized(self, client): pass  # 401
-    
+
     # DELETE /api/v1/users/me
     async def test_delete_account_success(self, client): pass  # 200
     async def test_delete_wrong_password(self, client): pass  # 401
@@ -728,13 +728,13 @@ TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.access_token' 2>/dev/null || echo "")
 
 if [ -n "$TOKEN" ] && [ "$TOKEN" != "null" ]; then
   echo "✅ Login successful, token received"
-  
+
   # Test authenticated endpoint
   PROFILE_RESPONSE=$(curl -s -H "Authorization: Bearer $TOKEN" \
     http://localhost:8000/api/v1/users/me)
-  
+
   echo "Profile response: $PROFILE_RESPONSE"
-  
+
   if echo $PROFILE_RESPONSE | grep -q "e2e@test.com"; then
     echo "✅ Authenticated endpoint works"
   else
@@ -815,7 +815,7 @@ echo "✅ Smoke test passed"
 - Fix any issues before proceeding to next phase
 
 **Before Project Handoff:**
-- Run "Complete Project Verification" 
+- Run "Complete Project Verification"
 - All checks must pass before considering project complete
 
 ## Deliverables

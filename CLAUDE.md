@@ -17,7 +17,7 @@ One of the most common issues in full-stack development is configuration mismatc
 
 #### Environment Variable Hierarchy
 1. **Check .env files first** - They override default values in code
-2. **Common override issue**: 
+2. **Common override issue**:
    ```javascript
    // src/services/api.ts
    baseURL: import.meta.env.VITE_API_URL || '/api/v1'  // .env value wins!
@@ -26,7 +26,7 @@ One of the most common issues in full-stack development is configuration mismatc
    ```bash
    # .env - CORRECT for proxy setup
    VITE_API_URL=/api/v1
-   
+
    # .env - WRONG (causes CORS)
    VITE_API_URL=http://localhost:8000/api/v1
    ```
@@ -58,7 +58,7 @@ make test              # Run tests immediately
 make lint              # Check code style
 make type-check        # Verify type annotations
 
-# Frontend changes  
+# Frontend changes
 npm test              # Run tests immediately
 npm run lint          # Check code style
 npx tsc --noEmit      # Verify TypeScript types
@@ -179,7 +179,7 @@ npm run check-all  # Before committing
 ## References to Detailed Guides
 
 - **Full Implementation Details**: See [IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)
-- **Complete Architecture**: See [CORE_FULLSTACK_TEMPLATE.md](docs/CORE_FULLSTACK_TEMPLATE.md) 
+- **Complete Architecture**: See [CORE_FULLSTACK_TEMPLATE.md](docs/CORE_FULLSTACK_TEMPLATE.md)
 - **Testing Setup**: See [TESTING_GUIDE.md](docs/guides/TESTING_GUIDE.md)
 - **API Integration**: See [API_INTEGRATION.md](docs/guides/API_INTEGRATION.md)
 - **Authentication**: See [AUTHENTICATION_GUIDE.md](docs/guides/AUTHENTICATION_GUIDE.md)

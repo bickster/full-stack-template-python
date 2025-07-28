@@ -28,7 +28,7 @@ export class FullStackClient {
 
   constructor(config: ApiConfig, tokenStorage?: TokenStorage) {
     this.tokenStorage = tokenStorage || new MemoryTokenStorage();
-    
+
     this.client = axios.create({
       baseURL: config.baseURL,
       timeout: config.timeout || 30000,
@@ -83,14 +83,14 @@ export class FullStackClient {
 
             const tokens = await this.refreshAccessToken({ refresh_token: refreshToken });
             this.tokenStorage.setTokens(tokens);
-            
+
             this.refreshSubscribers.forEach((callback) => callback(tokens.access_token));
             this.refreshSubscribers = [];
 
             if (originalRequest.headers) {
               originalRequest.headers.Authorization = `Bearer ${tokens.access_token}`;
             }
-            
+
             return this.client(originalRequest);
           } catch (refreshError) {
             this.tokenStorage.clearTokens();

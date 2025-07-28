@@ -68,7 +68,7 @@ Vite's development server prioritizes speed over type safety. It only transpiles
    ```bash
    # Quick check before committing
    npm run type-check
-   
+
    # Comprehensive check
    npm run check-all
    ```
@@ -176,7 +176,7 @@ Add to `.vscode/settings.json`:
 
 **Problem**: App runs in dev but `npm run build` fails with type errors.
 
-**Solution**: 
+**Solution**:
 1. Run `npm run type-check` to see all errors
 2. Fix each error systematically
 3. Use `npm run dev:all` going forward

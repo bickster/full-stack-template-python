@@ -100,15 +100,15 @@ class CustomTokenStorage(TokenStorage):
     def get_access_token(self) -> Optional[str]:
         # Your implementation
         pass
-    
+
     def get_refresh_token(self) -> Optional[str]:
         # Your implementation
         pass
-    
+
     def set_tokens(self, tokens: AuthTokens) -> None:
         # Your implementation
         pass
-    
+
     def clear_tokens(self) -> None:
         # Your implementation
         pass
@@ -342,7 +342,7 @@ def main():
         os.getenv("FULLSTACK_API_URL", "https://api.example.com"),
         token_storage=FileTokenStorage()
     )
-    
+
     # Check if already authenticated
     if client.is_authenticated():
         try:
@@ -352,11 +352,11 @@ def main():
         except AuthenticationError:
             # Token expired, need to login again
             client.clear_tokens()
-    
+
     # Login
     username = input("Username: ")
     password = getpass("Password: ")
-    
+
     try:
         client.login(LoginRequest(username=username, password=password))
         user = client.get_current_user()
@@ -384,25 +384,25 @@ from fullstack_api import FullStackClient, LoginRequest, AuthenticationError
 def fullstack_login(request):
     if request.method == "POST":
         client = FullStackClient(settings.FULLSTACK_API_URL)
-        
+
         try:
             tokens = client.login(LoginRequest(
                 username=request.POST["username"],
                 password=request.POST["password"]
             ))
-            
+
             # Store tokens in session
             request.session["access_token"] = tokens.access_token
             request.session["refresh_token"] = tokens.refresh_token
-            
+
             # Get user data
             user = client.get_current_user()
-            
+
             # Create or update Django user
             # ... your user sync logic here ...
-            
+
             return redirect("dashboard")
-            
+
         except AuthenticationError:
             # Handle login error
             pass
@@ -420,30 +420,30 @@ app.secret_key = "your-secret-key"
 def get_client():
     """Get API client with tokens from session."""
     client = FullStackClient("https://api.example.com")
-    
+
     if "access_token" in session:
         client.set_tokens(AuthTokens(
             access_token=session["access_token"],
             refresh_token=session["refresh_token"],
             token_type="bearer"
         ))
-    
+
     return client
 
 @app.route("/api/login", methods=["POST"])
 def login():
     client = get_client()
-    
+
     try:
         tokens = client.login(LoginRequest(
             username=request.json["username"],
             password=request.json["password"]
         ))
-        
+
         # Store tokens in session
         session["access_token"] = tokens.access_token
         session["refresh_token"] = tokens.refresh_token
-        
+
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -451,7 +451,7 @@ def login():
 @app.route("/api/user")
 def get_user():
     client = get_client()
-    
+
     try:
         user = client.get_current_user()
         return jsonify({
@@ -475,11 +475,11 @@ async def main():
     async with AsyncFullStackClient("https://api.example.com") as client:
         # Login
         await client.login(username="john_doe", password="password")
-        
+
         # Get user
         user = await client.get_current_user()
         print(f"Hello, {user.username}!")
-        
+
         # Logout
         await client.logout()
 
@@ -514,10 +514,10 @@ def test_get_user(client):
         "created_at": "2024-01-01T00:00:00",
         "updated_at": "2024-01-01T00:00:00"
     }
-    
+
     with patch.object(client, "_request", return_value=mock_user_data):
         user = client.get_current_user()
-        
+
         assert user.id == "123"
         assert user.username == "testuser"
         assert user.email == "test@example.com"

@@ -1,7 +1,7 @@
 """FullStack API Client."""
 
 import time
-from typing import Optional, Dict, Any, Union
+from typing import Any, Dict, Optional, Union
 from urllib.parse import urljoin
 
 import requests
@@ -9,24 +9,24 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 from .exceptions import (
-    FullStackAPIError,
     AuthenticationError,
-    ValidationError,
-    RateLimitError,
+    FullStackAPIError,
     NotFoundError,
+    RateLimitError,
     ServerError,
+    ValidationError,
 )
-from .storage import TokenStorage, MemoryTokenStorage
+from .storage import MemoryTokenStorage, TokenStorage
 from .types import (
     AuthTokens,
-    User,
+    ChangePasswordRequest,
+    HealthCheck,
     LoginRequest,
+    PasswordResetConfirm,
+    PasswordResetRequest,
     RegisterRequest,
     UpdateUserRequest,
-    ChangePasswordRequest,
-    PasswordResetRequest,
-    PasswordResetConfirm,
-    HealthCheck,
+    User,
 )
 
 
@@ -42,7 +42,7 @@ class FullStackClient:
         verify_ssl: bool = True,
     ):
         """Initialize client.
-        
+
         Args:
             base_url: API base URL
             token_storage: Token storage implementation
@@ -54,7 +54,7 @@ class FullStackClient:
         self.token_storage = token_storage or MemoryTokenStorage()
         self.timeout = timeout
         self.verify_ssl = verify_ssl
-        
+
         # Create session with retry strategy
         self.session = requests.Session()
         retry_strategy = Retry(
@@ -66,12 +66,14 @@ class FullStackClient:
         adapter = HTTPAdapter(max_retries=retry_strategy)
         self.session.mount("http://", adapter)
         self.session.mount("https://", adapter)
-        
+
         # Set default headers
-        self.session.headers.update({
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        })
+        self.session.headers.update(
+            {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            }
+        )
 
     def _get_url(self, path: str) -> str:
         """Get full URL for path."""
@@ -90,11 +92,11 @@ class FullStackClient:
             response.raise_for_status()
         except requests.HTTPError:
             self._handle_error(response)
-        
+
         # Return None for 204 No Content
         if response.status_code == 204:
             return None
-        
+
         try:
             return response.json()
         except ValueError:
@@ -111,9 +113,9 @@ class FullStackClient:
             message = response.text or "Unknown error"
             code = None
             details = {}
-        
+
         status_code = response.status_code
-        
+
         if status_code == 401:
             raise AuthenticationError(message, code, details, status_code)
         elif status_code == 422:
@@ -139,10 +141,10 @@ class FullStackClient:
         """Make API request."""
         url = self._get_url(path)
         headers = {}
-        
+
         if auth:
             headers.update(self._get_auth_headers())
-        
+
         response = self.session.request(
             method,
             url,
@@ -152,7 +154,7 @@ class FullStackClient:
             timeout=self.timeout,
             verify=self.verify_ssl,
         )
-        
+
         # Handle token refresh on 401
         if response.status_code == 401 and auth and retry_on_401:
             refresh_token = self.token_storage.get_refresh_token()
@@ -160,7 +162,7 @@ class FullStackClient:
                 try:
                     tokens = self.refresh_access_token(refresh_token)
                     self.token_storage.set_tokens(tokens)
-                    
+
                     # Retry request with new token
                     headers.update(self._get_auth_headers())
                     response = self.session.request(
@@ -175,7 +177,7 @@ class FullStackClient:
                 except (AuthenticationError, FullStackAPIError):
                     # Refresh failed, clear tokens
                     self.token_storage.clear_tokens()
-        
+
         return self._handle_response(response)
 
     # Health check

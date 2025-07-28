@@ -5,8 +5,6 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 
 import pytest
-from httpx import Response
-
 from fullstack_api import Client
 from fullstack_api.exceptions import (
     AuthenticationError,
@@ -15,11 +13,13 @@ from fullstack_api.exceptions import (
     ValidationError,
 )
 from fullstack_api.models import Token, User
+from httpx import Response
 
 
 @pytest.fixture
 def mock_response():
     """Create a mock response."""
+
     def _mock_response(status_code=200, json_data=None, headers=None):
         response = Mock(spec=Response)
         response.status_code = status_code
@@ -27,6 +27,7 @@ def mock_response():
         response.json.return_value = json_data or {}
         response.text = json.dumps(json_data) if json_data else ""
         return response
+
     return _mock_response
 
 
@@ -208,17 +209,21 @@ class TestClient:
 
         assert user.email == "test@example.com"
         assert user.username == "testuser"
-        
+
         # Check authorization header was sent
         call_args = mock_request.call_args
         headers = call_args.kwargs["headers"]
         assert headers["Authorization"] == "Bearer test_access_token"
 
     @patch("httpx.Client.request")
-    def test_auto_token_refresh(self, mock_request, authenticated_client, mock_response):
+    def test_auto_token_refresh(
+        self, mock_request, authenticated_client, mock_response
+    ):
         """Test automatic token refresh."""
         # Set token to expire soon
-        authenticated_client._token_expires_at = datetime.utcnow() + timedelta(seconds=30)
+        authenticated_client._token_expires_at = datetime.utcnow() + timedelta(
+            seconds=30
+        )
 
         # Mock refresh token response
         refresh_response = mock_response(
@@ -230,7 +235,7 @@ class TestClient:
                 "expires_in": 900,
             },
         )
-        
+
         # Mock get user response
         user_response = mock_response(
             status_code=200,

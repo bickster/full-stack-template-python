@@ -2,12 +2,13 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 
 @dataclass
 class AuthTokens:
     """Authentication tokens."""
+
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
@@ -16,6 +17,7 @@ class AuthTokens:
 @dataclass
 class LoginRequest:
     """Login request data."""
+
     username: str
     password: str
 
@@ -23,6 +25,7 @@ class LoginRequest:
 @dataclass
 class RegisterRequest:
     """Registration request data."""
+
     email: str
     username: str
     password: str
@@ -32,6 +35,7 @@ class RegisterRequest:
 @dataclass
 class User:
     """User model."""
+
     id: str
     email: str
     username: str
@@ -61,6 +65,7 @@ class User:
 @dataclass
 class UpdateUserRequest:
     """Update user request data."""
+
     email: Optional[str] = None
     username: Optional[str] = None
     full_name: Optional[str] = None
@@ -73,6 +78,7 @@ class UpdateUserRequest:
 @dataclass
 class ChangePasswordRequest:
     """Change password request data."""
+
     old_password: str
     new_password: str
 
@@ -80,12 +86,14 @@ class ChangePasswordRequest:
 @dataclass
 class PasswordResetRequest:
     """Password reset request data."""
+
     email: str
 
 
 @dataclass
 class PasswordResetConfirm:
     """Password reset confirmation data."""
+
     token: str
     new_password: str
 
@@ -93,6 +101,7 @@ class PasswordResetConfirm:
 @dataclass
 class HealthCheck:
     """Health check response."""
+
     status: str
     database: str
     version: str

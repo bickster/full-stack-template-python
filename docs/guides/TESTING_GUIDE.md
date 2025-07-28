@@ -104,7 +104,7 @@ python_files = test_*.py
 python_classes = Test*
 python_functions = test_*
 asyncio_mode = auto
-addopts = 
+addopts =
     -ra
     --strict-markers
     --cov=src
@@ -116,7 +116,7 @@ addopts =
 
 [coverage:run]
 source = src
-omit = 
+omit =
     */tests/*
     */migrations/*
     */__init__.py
@@ -162,15 +162,15 @@ async def engine():
         echo=False,
         future=True
     )
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     yield engine
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-    
+
     await engine.dispose()
 
 @pytest.fixture
@@ -179,7 +179,7 @@ async def db_session(engine) -> AsyncGenerator[AsyncSession, None]:
     async_session = sessionmaker(
         engine, class_=AsyncSession, expire_on_commit=False
     )
-    
+
     async with async_session() as session:
         yield session
         await session.rollback()
@@ -189,12 +189,12 @@ async def client(db_session) -> AsyncGenerator[AsyncClient, None]:
     """Create test client with database session override."""
     async def get_test_db():
         yield db_session
-    
+
     app.dependency_overrides[get_db] = get_test_db
-    
+
     async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac
-    
+
     app.dependency_overrides.clear()
 
 @pytest.fixture
@@ -240,12 +240,12 @@ class TestPasswordHashing:
         hashed = get_password_hash(password)
         assert password != hashed
         assert password not in hashed
-    
+
     def test_verify_password_correct(self):
         password = "TestPassword123!"
         hashed = get_password_hash(password)
         assert verify_password(password, hashed) is True
-    
+
     def test_verify_password_incorrect(self):
         password = "TestPassword123!"
         wrong_password = "WrongPassword123!"
@@ -258,7 +258,7 @@ class TestJWTTokens:
         token = create_access_token(data)
         assert isinstance(token, str)
         assert len(token) > 0
-    
+
     def test_decode_valid_token(self):
         data = {"sub": "user123"}
         token = create_access_token(data)
@@ -266,20 +266,20 @@ class TestJWTTokens:
         assert decoded["sub"] == "user123"
         assert "exp" in decoded
         assert "iat" in decoded
-    
+
     def test_token_expiration(self):
         data = {"sub": "user123"}
         # Create token that expires in 1 second
         token = create_access_token(data, timedelta(seconds=1))
-        
+
         # Should be valid immediately
         decoded = decode_token(token)
         assert decoded["sub"] == "user123"
-        
+
         # Wait for expiration
         import time
         time.sleep(2)
-        
+
         # Should raise exception
         with pytest.raises(Exception):  # Replace with your specific exception
             decode_token(token)
@@ -482,7 +482,7 @@ describe('Auth Store', () => {
 
   it('should login successfully', async () => {
     const { result } = renderHook(() => useAuthStore());
-    
+
     await act(async () => {
       await result.current.login({
         username: 'testuser',
@@ -496,7 +496,7 @@ describe('Auth Store', () => {
 
   it('should logout successfully', () => {
     const { result } = renderHook(() => useAuthStore());
-    
+
     act(() => {
       result.current.logout();
     });
@@ -596,9 +596,9 @@ expect(Navigate).toHaveBeenCalledWith(
 beforeEach(() => {
   vi.clearAllMocks();  // Clear all mock state
   // Reset store state
-  useAuthStore.setState({ 
-    user: null, 
-    token: null 
+  useAuthStore.setState({
+    user: null,
+    token: null
   });
 });
 ```
@@ -714,7 +714,7 @@ async def test_endpoint_validation_error(client):
 ```ini
 # pytest.ini (backend)
 [coverage:run]
-omit = 
+omit =
     */tests/*
     */migrations/*
     */alembic/*
@@ -750,7 +750,7 @@ coverage: {
          /\
         /  \    E2E Tests (10%)
        /    \   - Full user flows
-      /------\  
+      /------\
      /        \ Integration Tests (30%)
     /          \- API endpoints
    /            - Database operations
@@ -784,7 +784,7 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:15
@@ -802,24 +802,24 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    
+
     - name: Install dependencies
       run: |
         pip install --upgrade pip
         pip install -r requirements.txt -r requirements-dev.txt
-    
+
     - name: Run tests
       env:
         DATABASE_URL: postgresql+asyncpg://postgres:password@localhost/test_db
         TESTING: "1"
       run: |
         pytest --cov=src --cov-report=xml --cov-report=term
-    
+
     - name: Upload coverage
       uses: codecov/codecov-action@v3
 ```

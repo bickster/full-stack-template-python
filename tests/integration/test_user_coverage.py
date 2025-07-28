@@ -11,9 +11,7 @@ class TestUserEndpointsCoverage:
     """Test user endpoints for coverage."""
 
     @pytest.mark.asyncio
-    async def test_get_current_user_full(
-        self, client: AsyncClient, auth_headers
-    ):
+    async def test_get_current_user_full(self, client: AsyncClient, auth_headers):
         """Test getting full user profile."""
         response = await client.get("/api/v1/users/me", headers=auth_headers)
         assert response.status_code == 200
@@ -30,9 +28,7 @@ class TestUserEndpointsCoverage:
         assert "hashed_password" not in data  # Should never be exposed
 
     @pytest.mark.asyncio
-    async def test_update_user_email_only(
-        self, client: AsyncClient, auth_headers
-    ):
+    async def test_update_user_email_only(self, client: AsyncClient, auth_headers):
         """Test updating only email."""
         response = await client.put(
             "/api/v1/users/me",
@@ -45,9 +41,7 @@ class TestUserEndpointsCoverage:
         assert data["is_verified"] is False  # Email change resets verification
 
     @pytest.mark.asyncio
-    async def test_update_user_username_only(
-        self, client: AsyncClient, auth_headers
-    ):
+    async def test_update_user_username_only(self, client: AsyncClient, auth_headers):
         """Test updating only username."""
         response = await client.put(
             "/api/v1/users/me",
@@ -85,9 +79,7 @@ class TestUserEndpointsCoverage:
         )
 
     @pytest.mark.asyncio
-    async def test_update_user_invalid_data(
-        self, client: AsyncClient, auth_headers
-    ):
+    async def test_update_user_invalid_data(self, client: AsyncClient, auth_headers):
         """Test updating with invalid data."""
         response = await client.put(
             "/api/v1/users/me",
@@ -97,9 +89,7 @@ class TestUserEndpointsCoverage:
         assert response.status_code == 422
 
     @pytest.mark.asyncio
-    async def test_change_password_success(
-        self, client: AsyncClient, auth_headers
-    ):
+    async def test_change_password_success(self, client: AsyncClient, auth_headers):
         """Test successful password change."""
         response = await client.post(
             "/api/v1/users/me/change-password",
@@ -134,9 +124,7 @@ class TestUserEndpointsCoverage:
         )
 
     @pytest.mark.asyncio
-    async def test_change_password_weak_new(
-        self, client: AsyncClient, auth_headers
-    ):
+    async def test_change_password_weak_new(self, client: AsyncClient, auth_headers):
         """Test changing to weak password."""
         response = await client.post(
             "/api/v1/users/me/change-password",
@@ -217,9 +205,7 @@ class TestUserEndpointsCoverage:
             headers=headers,
         )
         assert response.status_code == 200
-        assert (
-            response.json()["message"] == "User account deleted successfully"
-        )
+        assert response.json()["message"] == "User account deleted successfully"
 
         # Verify can't login anymore
         login_response = await client.post(

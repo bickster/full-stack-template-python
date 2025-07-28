@@ -94,15 +94,15 @@ class CustomTokenStorage implements TokenStorage {
   getAccessToken(): string | null {
     // Your implementation
   }
-  
+
   getRefreshToken(): string | null {
     // Your implementation
   }
-  
+
   setTokens(tokens: AuthTokens): void {
     // Your implementation
   }
-  
+
   clearTokens(): void {
     // Your implementation
   }
@@ -210,7 +210,7 @@ try {
     const apiError = error.response?.data;
     console.error('Error:', apiError.error);
     console.error('Code:', apiError.code);
-    
+
     // Handle specific error codes
     switch (apiError.code) {
       case 'INVALID_CREDENTIALS':

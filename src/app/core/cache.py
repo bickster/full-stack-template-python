@@ -113,9 +113,7 @@ def cached(
                 if args:
                     key_parts.extend(str(arg) for arg in args)
                 if kwargs:
-                    key_parts.extend(
-                        f"{k}:{v}" for k, v in sorted(kwargs.items())
-                    )
+                    key_parts.extend(f"{k}:{v}" for k, v in sorted(kwargs.items()))
                 cache_key = ":".join(key_parts)
 
             # Check cache
@@ -128,9 +126,7 @@ def cached(
             result = await func(*args, **kwargs)
 
             # Cache result
-            ttl_seconds = (
-                ttl.total_seconds() if isinstance(ttl, timedelta) else ttl
-            )
+            ttl_seconds = ttl.total_seconds() if isinstance(ttl, timedelta) else ttl
             cache.set(cache_key, result, int(ttl_seconds))
             logger.debug("cache_set", key=cache_key, ttl=ttl_seconds)
 
@@ -147,9 +143,7 @@ def cached(
                 if args:
                     key_parts.extend(str(arg) for arg in args)
                 if kwargs:
-                    key_parts.extend(
-                        f"{k}:{v}" for k, v in sorted(kwargs.items())
-                    )
+                    key_parts.extend(f"{k}:{v}" for k, v in sorted(kwargs.items()))
                 cache_key = ":".join(key_parts)
 
             # Check cache
@@ -162,9 +156,7 @@ def cached(
             result = func(*args, **kwargs)
 
             # Cache result
-            ttl_seconds = (
-                ttl.total_seconds() if isinstance(ttl, timedelta) else ttl
-            )
+            ttl_seconds = ttl.total_seconds() if isinstance(ttl, timedelta) else ttl
             cache.set(cache_key, result, int(ttl_seconds))
             logger.debug("cache_set", key=cache_key, ttl=ttl_seconds)
 

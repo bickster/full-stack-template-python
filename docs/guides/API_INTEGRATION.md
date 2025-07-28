@@ -240,7 +240,7 @@ export class ApiService {
     this.client = new FullStackClient({
       baseURL: environment.apiUrl
     });
-    
+
     this.checkAuth();
   }
 
@@ -285,7 +285,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     const token = this.apiService.getAccessToken();
-    
+
     if (token) {
       req = req.clone({
         setHeaders: {
@@ -342,8 +342,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class ApiService {
   final Dio _dio;
   final FlutterSecureStorage _storage;
-  
-  ApiService() 
+
+  ApiService()
     : _dio = Dio(BaseOptions(baseUrl: 'https://api.example.com')),
       _storage = FlutterSecureStorage() {
     _setupInterceptors();
@@ -366,7 +366,7 @@ class ApiService {
             try {
               final tokens = await _refreshToken(refreshToken);
               await _saveTokens(tokens);
-              
+
               // Retry request
               error.requestOptions.headers['Authorization'] = 'Bearer ${tokens['access_token']}';
               final response = await _dio.fetch(error.requestOptions);
@@ -388,7 +388,7 @@ class ApiService {
       'username': username,
       'password': password,
     });
-    
+
     await _saveTokens(response.data);
     return response.data;
   }
@@ -415,12 +415,12 @@ interface AuthRequest extends Request {
 }
 
 export async function authMiddleware(
-  req: AuthRequest, 
-  res: Response, 
+  req: AuthRequest,
+  res: Response,
   next: NextFunction
 ) {
   const token = req.headers.authorization?.replace('Bearer ', '');
-  
+
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });
   }
@@ -429,7 +429,7 @@ export async function authMiddleware(
     const client = new FullStackClient({
       baseURL: process.env.API_URL!
     });
-    
+
     client.setTokens({
       access_token: token,
       refresh_token: '', // Not needed for validation
@@ -459,24 +459,24 @@ class FullStackAuthMiddleware:
 
     def __call__(self, request):
         auth_header = request.headers.get('Authorization', '')
-        
+
         if auth_header.startswith('Bearer '):
             token = auth_header[7:]
-            
+
             client = FullStackClient(settings.FULLSTACK_API_URL)
             client.set_tokens(AuthTokens(
                 access_token=token,
                 refresh_token='',
                 token_type='bearer'
             ))
-            
+
             try:
                 user = client.get_current_user()
                 request.fullstack_user = user
                 request.fullstack_client = client
             except Exception:
                 return JsonResponse({'error': 'Invalid token'}, status=401)
-        
+
         response = self.get_response(request)
         return response
 ```
@@ -503,7 +503,7 @@ function verifyWebhookSignature(
   const hmac = crypto.createHmac('sha256', secret);
   hmac.update(payload);
   const expectedSignature = hmac.digest('hex');
-  
+
   return crypto.timingSafeEqual(
     Buffer.from(signature),
     Buffer.from(expectedSignature)
@@ -513,13 +513,13 @@ function verifyWebhookSignature(
 export async function handleWebhook(req: Request, res: Response) {
   const signature = req.headers['x-webhook-signature'] as string;
   const payload = JSON.stringify(req.body);
-  
+
   if (!verifyWebhookSignature(payload, signature, process.env.WEBHOOK_SECRET!)) {
     return res.status(401).json({ error: 'Invalid signature' });
   }
-  
+
   const { event, data } = req.body as WebhookPayload;
-  
+
   switch (event) {
     case 'user.created':
       await handleUserCreated(data);
@@ -533,7 +533,7 @@ export async function handleWebhook(req: Request, res: Response) {
     default:
       console.log('Unknown event:', event);
   }
-  
+
   res.status(200).json({ received: true });
 }
 ```
@@ -549,7 +549,7 @@ import nock from 'nock';
 
 describe('API Integration', () => {
   let client: FullStackClient;
-  
+
   beforeEach(() => {
     client = new FullStackClient({
       baseURL: 'https://api.example.com'
@@ -825,12 +825,12 @@ class ApiMonitor {
   }
 
   getAverageResponseTime(endpoint?: string): number {
-    const relevant = endpoint 
+    const relevant = endpoint
       ? this.metrics.filter(m => m.endpoint === endpoint)
       : this.metrics;
-    
+
     if (relevant.length === 0) return 0;
-    
+
     const sum = relevant.reduce((acc, m) => acc + m.duration, 0);
     return sum / relevant.length;
   }
@@ -847,7 +847,7 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(
   response => {
     const duration = Date.now() - response.config.metadata.startTime;
-    
+
     monitor.track({
       endpoint: response.config.url!,
       method: response.config.method!.toUpperCase(),
@@ -855,13 +855,13 @@ axios.interceptors.response.use(
       status: response.status,
       timestamp: Date.now()
     });
-    
+
     return response;
   },
   error => {
     if (error.config?.metadata) {
       const duration = Date.now() - error.config.metadata.startTime;
-      
+
       monitor.track({
         endpoint: error.config.url!,
         method: error.config.method!.toUpperCase(),
@@ -870,7 +870,7 @@ axios.interceptors.response.use(
         timestamp: Date.now()
       });
     }
-    
+
     return Promise.reject(error);
   }
 );
@@ -891,12 +891,12 @@ class ErrorTracker {
         // Filter out expected errors
         if (event.exception) {
           const error = hint.originalException;
-          
+
           // Don't send 401 errors
           if (error?.response?.status === 401) {
             return null;
           }
-          
+
           // Add API context
           if (error?.config) {
             event.contexts = {
@@ -909,7 +909,7 @@ class ErrorTracker {
             };
           }
         }
-        
+
         return event;
       }
     });

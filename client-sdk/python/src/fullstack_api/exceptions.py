@@ -32,13 +32,20 @@ class AuthenticationError(APIError):
 
     def __init__(self, message: str = "Authentication failed", **kwargs):
         """Initialize authentication error."""
-        super().__init__(message, status_code=401, code="authentication_error", **kwargs)
+        super().__init__(
+            message, status_code=401, code="authentication_error", **kwargs
+        )
 
 
 class ValidationError(APIError):
     """Raised when request validation fails."""
 
-    def __init__(self, message: str = "Validation failed", errors: Optional[list] = None, **kwargs):
+    def __init__(
+        self,
+        message: str = "Validation failed",
+        errors: Optional[list] = None,
+        **kwargs,
+    ):
         """Initialize validation error."""
         super().__init__(message, status_code=422, code="validation_error", **kwargs)
         self.errors = errors or []
@@ -55,7 +62,12 @@ class NotFoundError(APIError):
 class RateLimitError(APIError):
     """Raised when rate limit is exceeded."""
 
-    def __init__(self, message: str = "Rate limit exceeded", retry_after: Optional[int] = None, **kwargs):
+    def __init__(
+        self,
+        message: str = "Rate limit exceeded",
+        retry_after: Optional[int] = None,
+        **kwargs,
+    ):
         """Initialize rate limit error."""
         super().__init__(message, status_code=429, code="rate_limit_exceeded", **kwargs)
         self.retry_after = retry_after

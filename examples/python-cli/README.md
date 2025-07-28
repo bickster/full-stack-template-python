@@ -131,8 +131,8 @@ $ ./fullstack_cli.py update
 Update Profile
 Press Enter to keep current value
 
-Email [john@example.com]: 
-Username [john_doe]: 
+Email [john@example.com]:
+Username [john_doe]:
 Full Name [John Doe]: John Smith
 
 Changes to be made:
@@ -235,7 +235,7 @@ To add a new command:
 def new_command(example: str):
     """Description of your command"""
     client = get_client()
-    
+
     # Your command logic here
     pass
 ```

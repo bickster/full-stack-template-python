@@ -1,6 +1,6 @@
 /**
  * Full-Stack API TypeScript SDK
- * 
+ *
  * @packageDocumentation
  */
 

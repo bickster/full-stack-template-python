@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Batch Operations Example
- * 
+ *
  * Demonstrates efficient batch processing with the FullStack API
  */
 
@@ -72,21 +72,21 @@ class BatchProcessor {
     logger.info(`Starting batch processing of ${items.length} items`);
 
     const results = [];
-    
+
     for (let i = 0; i < items.length; i += this.batchSize) {
       const batch = items.slice(i, i + this.batchSize);
       const batchNum = Math.floor(i / this.batchSize) + 1;
       const totalBatches = Math.ceil(items.length / this.batchSize);
-      
+
       logger.info(`Processing batch ${batchNum}/${totalBatches}`);
-      
+
       const batchResults = await this.processBatch(batch, processor);
       results.push(...batchResults);
-      
+
       // Progress update
       const progress = (this.stats.processed / this.stats.total * 100).toFixed(1);
       logger.info(`Progress: ${progress}% (${this.stats.processed}/${this.stats.total})`);
-      
+
       // Rate limiting - wait between batches
       if (i + this.batchSize < items.length) {
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -122,7 +122,7 @@ async function bulkCreateUsers() {
   ];
 
   const processor = new BatchProcessor(client, 5);
-  
+
   const results = await processor.processAll(newUsers, async (userData) => {
     const user = await client.register(userData);
     logger.info(`Created user: ${user.username}`);
@@ -158,7 +158,7 @@ async function bulkPasswordReset() {
   ];
 
   const processor = new BatchProcessor(client, 3);
-  
+
   await processor.processAll(emails, async (email) => {
     await client.requestPasswordReset({ email });
     logger.info(`Password reset sent to: ${email}`);
@@ -187,7 +187,7 @@ async function migrateUserData() {
   ];
 
   const processor = new BatchProcessor(client, 10);
-  
+
   const migrationProcessor = async (user) => {
     // Simulate data transformation
     const newData = {
@@ -216,12 +216,12 @@ async function parallelHealthChecks() {
 
   const healthChecks = endpoints.map(async (url) => {
     const client = new FullStackClient({ baseURL: url });
-    
+
     try {
       const start = Date.now();
       const health = await client.healthCheck();
       const duration = Date.now() - start;
-      
+
       return {
         url,
         status: health.status,
@@ -240,10 +240,10 @@ async function parallelHealthChecks() {
   });
 
   const results = await Promise.all(healthChecks);
-  
+
   // Display results
   console.table(results);
-  
+
   // Save to file
   await fs.writeFile(
     'health-check-results.json',
@@ -265,19 +265,19 @@ async function main() {
       case 'create-users':
         await bulkCreateUsers();
         break;
-      
+
       case 'password-reset':
         await bulkPasswordReset();
         break;
-      
+
       case 'migrate':
         await migrateUserData();
         break;
-      
+
       case 'health-check':
         await parallelHealthChecks();
         break;
-      
+
       default:
         logger.info('Available operations:');
         logger.info('  node batch-operations.js create-users');

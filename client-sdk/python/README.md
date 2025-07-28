@@ -54,16 +54,16 @@ try:
         password="SecurePass123!",
         full_name="New User"
     )
-    
+
     # Login
     tokens = client.auth.login(
         username="newuser@example.com",
         password="SecurePass123!"
     )
-    
+
     # Refresh token (handled automatically, but can be done manually)
     new_tokens = client.auth.refresh_token()
-    
+
 except AuthenticationError as e:
     print(f"Authentication failed: {e.detail}")
 ```
@@ -97,7 +97,7 @@ async def main():
             username="user@example.com",
             password="password123"
         )
-        
+
         user = await client.users.get_current_user()
         print(f"Logged in as: {user.email}")
 

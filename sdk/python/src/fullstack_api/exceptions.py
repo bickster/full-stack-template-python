@@ -1,6 +1,6 @@
 """Exceptions for FullStack API Client."""
 
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 
 class FullStackAPIError(Exception):
@@ -23,12 +23,13 @@ class FullStackAPIError(Exception):
 
 class AuthenticationError(FullStackAPIError):
     """Authentication failed."""
+
     pass
 
 
 class ValidationError(FullStackAPIError):
     """Validation error."""
-    
+
     @property
     def errors(self) -> list:
         """Get validation errors."""
@@ -37,7 +38,7 @@ class ValidationError(FullStackAPIError):
 
 class RateLimitError(FullStackAPIError):
     """Rate limit exceeded."""
-    
+
     @property
     def retry_after(self) -> Optional[int]:
         """Get retry after time in seconds."""
@@ -46,9 +47,11 @@ class RateLimitError(FullStackAPIError):
 
 class NotFoundError(FullStackAPIError):
     """Resource not found."""
+
     pass
 
 
 class ServerError(FullStackAPIError):
     """Server error."""
+
     pass

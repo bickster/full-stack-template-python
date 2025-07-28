@@ -8,7 +8,7 @@ echo "======================="
 echo ""
 
 # Check if running as root
-if [ "$EUID" -ne 0 ]; then 
+if [ "$EUID" -ne 0 ]; then
     echo "Please run as root (use sudo)"
     exit 1
 fi
@@ -59,7 +59,7 @@ docker run --rm \
 # Check if successful
 if [ $? -eq 0 ]; then
     echo "✅ SSL certificate obtained successfully!"
-    
+
     # Create renewal script
     cat > scripts/renew_ssl.sh << EOF
 #!/bin/bash
@@ -72,11 +72,11 @@ echo "SSL certificates renewed!"
 EOF
 
     chmod +x scripts/renew_ssl.sh
-    
+
     # Add to crontab for automatic renewal
     echo "Setting up automatic renewal..."
     (crontab -l 2>/dev/null; echo "0 3 * * * cd $PWD && ./scripts/renew_ssl.sh >> /var/log/ssl-renewal.log 2>&1") | crontab -
-    
+
     echo ""
     echo "✅ SSL setup complete!"
     echo ""

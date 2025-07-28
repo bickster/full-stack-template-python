@@ -38,9 +38,7 @@ class TestAuthEndpoints:
         assert user.email == "newuser@example.com"
         assert verify_password("NewPass123!", user.hashed_password)
 
-    async def test_register_duplicate_email(
-        self, client: AsyncClient, test_user: User
-    ):
+    async def test_register_duplicate_email(self, client: AsyncClient, test_user: User):
         """Test registration with duplicate email."""
         response = await client.post(
             "/api/v1/auth/register",
@@ -109,9 +107,7 @@ class TestAuthEndpoints:
         assert data["user"]["id"] == str(test_user.id)
         assert data["user"]["email"] == test_user.email
 
-    async def test_login_invalid_password(
-        self, client: AsyncClient, test_user: User
-    ):
+    async def test_login_invalid_password(self, client: AsyncClient, test_user: User):
         """Test login with invalid password."""
         response = await client.post(
             "/api/v1/auth/login",
@@ -162,9 +158,7 @@ class TestAuthEndpoints:
         assert data["error"] == "User account is inactive"
         assert data["code"] == "USER_INACTIVE"
 
-    async def test_refresh_token_success(
-        self, client: AsyncClient, test_user: User
-    ):
+    async def test_refresh_token_success(self, client: AsyncClient, test_user: User):
         """Test successful token refresh."""
         # First login to get tokens
         login_response = await client.post(

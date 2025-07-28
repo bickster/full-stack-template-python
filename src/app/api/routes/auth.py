@@ -54,9 +54,7 @@ async def register(
 ) -> RegisterResponse:
     """Register a new user."""
     # Check if email already exists
-    result = await db.execute(
-        select(User).where(User.email == register_data.email)
-    )
+    result = await db.execute(select(User).where(User.email == register_data.email))
     if result.scalar_one_or_none():
         raise ConflictError(
             message="Email already registered",
@@ -111,10 +109,12 @@ async def login(
     user_agent = get_user_agent(request)
 
     # Check rate limit
-    is_allowed, remaining, retry_after = (
-        await login_rate_limiter.check_login_rate_limit(
-            db, login_data.email, ip_address
-        )
+    (
+        is_allowed,
+        remaining,
+        retry_after,
+    ) = await login_rate_limiter.check_login_rate_limit(
+        db, login_data.email, ip_address
     )
 
     if not is_allowed:
@@ -124,9 +124,7 @@ async def login(
         raise RateLimitError(
             message="Too many login attempts. Please try again later.",
             details={
-                "retry_after": (
-                    retry_after.isoformat() if retry_after else None
-                ),
+                "retry_after": (retry_after.isoformat() if retry_after else None),
             },
         )
 
@@ -140,9 +138,7 @@ async def login(
     user = result.scalar_one_or_none()
 
     # Verify user and password
-    if not user or not verify_password(
-        login_data.password, user.hashed_password
-    ):
+    if not user or not verify_password(login_data.password, user.hashed_password):
         # Record failed attempt
         await login_rate_limiter.record_login_attempt(
             db, login_data.email, ip_address, False, user_agent=user_agent

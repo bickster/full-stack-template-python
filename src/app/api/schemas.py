@@ -30,9 +30,7 @@ class SuccessResponse(BaseModel):
     """Success response model."""
 
     message: str = Field(..., description="Success message")
-    data: Optional[Dict[str, Any]] = Field(
-        default=None, description="Response data"
-    )
+    data: Optional[Dict[str, Any]] = Field(default=None, description="Response data")
 
 
 # User schemas
@@ -107,9 +105,7 @@ class UserResponse(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
     @classmethod
-    def from_orm_versioned(
-        cls, obj: Any, version: str = "1.0"
-    ) -> "UserResponse":
+    def from_orm_versioned(cls, obj: Any, version: str = "1.0") -> "UserResponse":
         """Create versioned response based on API version."""
         # Base fields for all versions
         data = {

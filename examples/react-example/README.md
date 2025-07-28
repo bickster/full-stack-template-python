@@ -88,11 +88,11 @@ useEffect(() => {
 Routes are protected using conditional rendering:
 
 ```typescript
-<Route 
-  path="/dashboard" 
+<Route
+  path="/dashboard"
   element={
     user ? <Dashboard user={user} /> : <Navigate to="/login" />
-  } 
+  }
 />
 ```
 

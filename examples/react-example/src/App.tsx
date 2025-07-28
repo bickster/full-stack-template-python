@@ -68,33 +68,33 @@ function App() {
 
           <main className="app-main">
             <Routes>
-              <Route 
-                path="/login" 
+              <Route
+                path="/login"
                 element={
                   user ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />
-                } 
+                }
               />
-              <Route 
-                path="/register" 
+              <Route
+                path="/register"
                 element={
                   user ? <Navigate to="/dashboard" /> : <Register onRegister={handleLogin} />
-                } 
+                }
               />
-              <Route 
-                path="/dashboard" 
+              <Route
+                path="/dashboard"
                 element={
                   user ? <Dashboard user={user} /> : <Navigate to="/login" />
-                } 
+                }
               />
-              <Route 
-                path="/profile" 
+              <Route
+                path="/profile"
                 element={
                   user ? <Profile user={user} onUpdate={checkAuth} /> : <Navigate to="/login" />
-                } 
+                }
               />
-              <Route 
-                path="/" 
-                element={<Navigate to={user ? "/dashboard" : "/login"} />} 
+              <Route
+                path="/"
+                element={<Navigate to={user ? "/dashboard" : "/login"} />}
               />
             </Routes>
           </main>

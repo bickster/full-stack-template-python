@@ -53,9 +53,7 @@ class EmailService:
             bool: True if email was sent successfully
         """
         if not all([self.smtp_host, self.smtp_user, self.smtp_password]):
-            logger.warning(
-                "email_not_configured", to_email=to_email, subject=subject
-            )
+            logger.warning("email_not_configured", to_email=to_email, subject=subject)
             return False
 
         try:
@@ -115,9 +113,7 @@ class EmailService:
         Returns:
             bool: True if email was sent successfully
         """
-        reset_url = (
-            f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
-        )
+        reset_url = f"{settings.FRONTEND_URL}/reset-password?token={reset_token}"
 
         # Render email template
         template = self.template_env.get_template("password_reset.html")

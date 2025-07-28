@@ -118,11 +118,11 @@ async function refreshAccessToken(refreshToken: string) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refresh_token: refreshToken })
   });
-  
+
   if (!response.ok) {
     throw new Error('Refresh failed');
   }
-  
+
   return response.json();
 }
 ```
@@ -356,14 +356,14 @@ export async function getServerSideClient() {
 // app/api/auth/login/route.ts
 export async function POST(request: Request) {
   const { username, password } = await request.json();
-  
+
   const client = new FullStackClient({
     baseURL: process.env.API_URL!
   });
 
   try {
     const tokens = await client.login({ username, password });
-    
+
     // Set secure cookies
     cookies().set('access_token', tokens.access_token, {
       httpOnly: true,
@@ -371,7 +371,7 @@ export async function POST(request: Request) {
       sameSite: 'lax',
       maxAge: 15 * 60 // 15 minutes
     });
-    
+
     cookies().set('refresh_token', tokens.refresh_token, {
       httpOnly: true,
       secure: true,
@@ -440,7 +440,7 @@ axios.interceptors.response.use(
   async error => {
     if (error.response?.status === 401 && !error.config._retry) {
       error.config._retry = true;
-      
+
       try {
         const tokens = await refreshAccessToken();
         localStorage.setItem('access_token', tokens.access_token);
@@ -537,7 +537,7 @@ function addRefreshSubscriber(callback: (token: string) => void) {
 if (error.response?.status === 401) {
   if (!isRefreshing) {
     isRefreshing = true;
-    
+
     refreshAccessToken()
       .then(tokens => {
         isRefreshing = false;
@@ -548,7 +548,7 @@ if (error.response?.status === 401) {
         // Redirect to login
       });
   }
-  
+
   return new Promise(resolve => {
     addRefreshSubscriber((token: string) => {
       error.config.headers.Authorization = `Bearer ${token}`;

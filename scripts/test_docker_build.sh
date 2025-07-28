@@ -39,7 +39,7 @@ if [ -f "docker-compose.yml" ]; then
     python3 -c "import yaml; yaml.safe_load(open('docker-compose.yml'))" 2>/dev/null
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✓${NC} docker-compose.yml is valid YAML"
-        
+
         # Check for required services
         for service in db api frontend nginx; do
             if grep -q "^  $service:" docker-compose.yml; then

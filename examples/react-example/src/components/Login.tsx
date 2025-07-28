@@ -24,7 +24,7 @@ export function Login({ onLogin }: LoginProps) {
       if (err instanceof AxiosError) {
         const errorData = err.response?.data;
         setError(errorData?.error || 'Login failed');
-        
+
         if (errorData?.code === 'RATE_LIMIT_EXCEEDED') {
           const retryAfter = errorData.details?.retry_after;
           setError(`Too many attempts. Please try again in ${retryAfter} seconds.`);
@@ -40,9 +40,9 @@ export function Login({ onLogin }: LoginProps) {
   return (
     <div className="auth-form">
       <h2>Login</h2>
-      
+
       {error && <div className="error-message">{error}</div>}
-      
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="username">Username</label>

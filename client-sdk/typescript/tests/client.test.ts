@@ -282,7 +282,7 @@ describe('FullStackClient', () => {
       const id = client.addRequestInterceptor(interceptor);
 
       expect(mockAxiosInstance.interceptors.request.use).toHaveBeenCalled();
-      
+
       // In real implementation, we'd need to track interceptor IDs
       expect(id).toBe(1);
     });
@@ -292,14 +292,14 @@ describe('FullStackClient', () => {
         onFulfilled: vi.fn(),
         onRejected: vi.fn(),
       };
-      
+
       const id = client.addResponseInterceptor(interceptor);
 
       expect(mockAxiosInstance.interceptors.response.use).toHaveBeenCalledWith(
         interceptor.onFulfilled,
         interceptor.onRejected
       );
-      
+
       expect(id).toBe(1);
     });
   });

@@ -219,7 +219,7 @@ let processed = 0;
 for (const item of items) {
   await processItem(item);
   processed++;
-  
+
   if (processed % 10 === 0) {
     const percent = (processed / total * 100).toFixed(1);
     logger.info(`Progress: ${percent}% (${processed}/${total})`);

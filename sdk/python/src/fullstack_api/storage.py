@@ -65,7 +65,7 @@ class FileTokenStorage(TokenStorage):
 
     def __init__(self, file_path: Optional[str] = None):
         """Initialize storage.
-        
+
         Args:
             file_path: Path to token file. Defaults to ~/.fullstack/tokens.json
         """
@@ -74,7 +74,7 @@ class FileTokenStorage(TokenStorage):
             self.file_path = home / ".fullstack" / "tokens.json"
         else:
             self.file_path = Path(file_path)
-        
+
         # Create directory if it doesn't exist
         self.file_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -82,7 +82,7 @@ class FileTokenStorage(TokenStorage):
         """Read tokens from file."""
         if not self.file_path.exists():
             return {}
-        
+
         try:
             with open(self.file_path, "r") as f:
                 return json.load(f)
@@ -93,7 +93,7 @@ class FileTokenStorage(TokenStorage):
         """Write tokens to file."""
         with open(self.file_path, "w") as f:
             json.dump(tokens, f)
-        
+
         # Set restrictive permissions (owner read/write only)
         os.chmod(self.file_path, 0o600)
 
@@ -109,11 +109,13 @@ class FileTokenStorage(TokenStorage):
 
     def set_tokens(self, tokens: AuthTokens) -> None:
         """Store tokens."""
-        self._write_tokens({
-            "access_token": tokens.access_token,
-            "refresh_token": tokens.refresh_token,
-            "token_type": tokens.token_type,
-        })
+        self._write_tokens(
+            {
+                "access_token": tokens.access_token,
+                "refresh_token": tokens.refresh_token,
+                "token_type": tokens.token_type,
+            }
+        )
 
     def clear_tokens(self) -> None:
         """Clear stored tokens."""

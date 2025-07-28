@@ -207,17 +207,17 @@ CREATE TABLE audit_logs (
 # Example model with all best practices
 class User(Base):
     __tablename__ = "users"
-    
+
     # Always use UUID with callable default
     id = Column(UUID, primary_key=True, default=uuid.uuid4)
-    
+
     # Use timezone-aware timestamps
     created_at = Column(
-        DateTime(timezone=True), 
-        server_default=func.now(), 
+        DateTime(timezone=True),
+        server_default=func.now(),
         nullable=False
     )
-    
+
     # Indexes - ALWAYS index foreign keys
     __table_args__ = (
         Index("idx_users_email", "email"),
@@ -231,7 +231,7 @@ class User(Base):
 ```python
 # Always specify ondelete behavior explicitly
 user_id = Column(
-    UUID, 
+    UUID,
     ForeignKey("users.id", ondelete="CASCADE"),  # For dependent records
     nullable=False,
     index=True  # Or use __table_args__
@@ -239,7 +239,7 @@ user_id = Column(
 
 # For optional relationships
 user_id = Column(
-    UUID, 
+    UUID,
     ForeignKey("users.id", ondelete="SET NULL"),  # Preserve records
     nullable=True,
     index=True
@@ -253,16 +253,16 @@ def validate_models():
     """Pre-migration validation checks."""
     # 1. Import all models
     from app.db.models import Base, User, RefreshToken
-    
+
     # 2. Check foreign key indexes
     for table in Base.metadata.tables.values():
         fk_columns = {fk.parent.name for fk in table.foreign_keys}
         indexed_columns = {col.name for idx in table.indexes for col in idx.columns}
-        
+
         missing = fk_columns - indexed_columns
         if missing:
             raise ValueError(f"Missing indexes on {table.name}: {missing}")
-    
+
     # 3. Verify no circular dependencies
     # 4. Check naming conventions
     print("✅ All migration checks passed!")
@@ -402,7 +402,7 @@ Instead of the traditional "implement then fix" cycle:
 ### Coverage Requirements & Strategy
 - Overall: 80% minimum (MANDATORY - not negotiable)
 - Core business logic: 90% minimum
-- API endpoints: 85% minimum  
+- API endpoints: 85% minimum
 - Security functions: 95% minimum
 
 #### 80% Coverage Achievement Strategy
@@ -481,7 +481,7 @@ pytest tests/unit/test_auth.py --cov=src/app/api/routes/auth --cov-report=term-m
 # For each endpoint, test:
 - Success case with valid data
 - Validation error (422)
-- Authentication required (401) 
+- Authentication required (401)
 - Authorization denied (403)
 - Resource not found (404)
 - Rate limiting (429)
@@ -543,7 +543,7 @@ make lint                    # No linting errors
 make type-check             # No type errors
 pytest --cov=src --cov-fail-under=80  # Coverage requirement met
 
-# 6. Frontend verification  
+# 6. Frontend verification
 echo "🔍 Testing frontend..."
 cd ui
 npm test                    # All tests pass
@@ -580,7 +580,7 @@ echo "🤖 Running CI simulation..."
 
 # Backend CI pipeline
 make format              # Format all code
-make lint               # Check code style  
+make lint               # Check code style
 make type-check         # Verify types
 make test-cov           # Run tests with coverage
 make security-check     # Security analysis
@@ -741,7 +741,7 @@ expect(Navigate).toHaveBeenCalledWith(
   ```python
   # Old (deprecated in Python 3.12+)
   datetime.utcnow()
-  
+
   # New
   from datetime import timezone
   datetime.now(timezone.utc)
@@ -758,7 +758,7 @@ expect(Navigate).toHaveBeenCalledWith(
   ```bash
   # Run only unit tests (no DB required)
   pytest tests/unit/ -v
-  
+
   # Run integration tests separately (requires DB)
   pytest tests/integration/ -v
   ```
@@ -768,11 +768,11 @@ expect(Navigate).toHaveBeenCalledWith(
   ```ini
   # pytest.ini
   [coverage:run]
-  omit = 
+  omit =
       */tests/*
       */migrations/*
       */config_production.py  # Exclude production-only files
-      
+
   [coverage:report]
   fail_under = 70  # Start with achievable goal, increase over time
   ```
@@ -825,7 +825,7 @@ expect(Navigate).toHaveBeenCalledWith(
   ```typescript
   // ❌ Wrong: Assuming Ant Design spinner has role="img"
   expect(screen.getByRole('img')).toBeInTheDocument();
-  
+
   // ✅ Correct: Query by actual DOM attributes
   const spinner = document.querySelector('[aria-busy="true"]');
   expect(spinner).toHaveClass('ant-spin-spinning');
@@ -835,10 +835,10 @@ expect(Navigate).toHaveBeenCalledWith(
   ```typescript
   // Strategy 1: Class names for UI libraries
   const modal = document.querySelector('.ant-modal');
-  
+
   // Strategy 2: Text content
   expect(screen.getByText('Loading...')).toBeInTheDocument();
-  
+
   // Strategy 3: Test IDs for critical elements
   expect(screen.getByTestId('auth-guard-spinner')).toBeInTheDocument();
   ```
@@ -848,7 +848,7 @@ expect(Navigate).toHaveBeenCalledWith(
   ```typescript
   // ❌ Wrong expectation
   expect(Navigate).toHaveBeenCalledWith({ to: '/login' }, {});
-  
+
   // ✅ Correct expectation
   expect(Navigate).toHaveBeenCalledWith({ to: '/login' }, undefined);
   ```
@@ -866,7 +866,7 @@ expect(Navigate).toHaveBeenCalledWith(
   expect(Navigate).toHaveBeenCalledWith(
     expect.objectContaining({ to: '/login' })
   );
-  
+
   // ✅ Complete expectation
   expect(Navigate).toHaveBeenCalledWith(
     { to: '/login', replace: true, state: { from: location } },
@@ -878,10 +878,10 @@ expect(Navigate).toHaveBeenCalledWith(
 - **State Reset**: Reset store state before each test
   ```typescript
   beforeEach(() => {
-    useAuthStore.setState({ 
-      user: null, 
+    useAuthStore.setState({
+      user: null,
       token: null,
-      isLoading: false 
+      isLoading: false
     });
   });
   ```
@@ -937,7 +937,7 @@ expect(Navigate).toHaveBeenCalledWith(
     { to: '/login' },
     {}  // React passes undefined, not {}
   );
-  
+
   // ✅ Correct: Match actual call signature
   expect(Navigate).toHaveBeenCalledWith(
     { to: '/login', replace: true },
@@ -949,7 +949,7 @@ expect(Navigate).toHaveBeenCalledWith(
 - **Zustand Store Testing**: Handle act() warnings properly
   ```typescript
   import { renderHook, act } from '@testing-library/react';
-  
+
   describe('Auth Store', () => {
     beforeEach(() => {
       // Reset store state before each test
@@ -959,15 +959,15 @@ expect(Navigate).toHaveBeenCalledWith(
         isAuthenticated: false
       });
     });
-  
+
     it('should handle async actions', async () => {
       const { result } = renderHook(() => useAuthStore());
-      
+
       // Note: act() warnings are expected and normal
       await act(async () => {
         await result.current.login({ email: 'test@test.com', password: 'pass' });
       });
-      
+
       expect(result.current.isAuthenticated).toBe(true);
     });
   });
@@ -980,7 +980,7 @@ expect(Navigate).toHaveBeenCalledWith(
   import { render as rtlRender } from '@testing-library/react';
   import { MemoryRouter } from 'react-router-dom';
   import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-  
+
   // Mock router from the start
   vi.mock('react-router-dom', async () => {
     const actual = await vi.importActual('react-router-dom');
@@ -990,7 +990,7 @@ expect(Navigate).toHaveBeenCalledWith(
       useNavigate: () => vi.fn()
     };
   });
-  
+
   export function render(ui: React.ReactElement, options = {}) {
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -998,7 +998,7 @@ expect(Navigate).toHaveBeenCalledWith(
         mutations: { retry: false }
       }
     });
-  
+
     return rtlRender(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
@@ -1200,22 +1200,22 @@ Feature: FullStackTemplate {
     - "RESTful API with FastAPI backend"
     - "React frontend with TypeScript"
     - "PostgreSQL database with migrations"
-    
+
   Boundaries:
     # Performance
     - "API response time: <200ms for auth endpoints"
     - "Frontend bundle size: <500KB"
     - "Database query time: <50ms"
-    
+
     # Security
     - "JWT expiry: 15 minutes access, 30 days refresh"
     - "Password: 8+ chars with complexity"
     - "Rate limiting: 5 login attempts per 15 minutes"
-    
+
     # Scale
     - "Concurrent users: 1000 maximum"
     - "Database connections: 20 pool size"
-    
+
   Success:
     - "All auth endpoints functional"
     - "Frontend routing with auth guards"
@@ -1232,12 +1232,12 @@ Component: UserAuthentication {
     - "Handle user login and token generation"
     - "Validate credentials against database"
     - "Generate JWT tokens on success"
-    
+
   Boundaries:
     - "Response time: <100ms"
     - "Max login attempts: 5 per 15 minutes"
     - "Token size: <1KB"
-    
+
   Success:
     - "Valid users receive tokens"
     - "Invalid attempts are logged"
@@ -1261,7 +1261,7 @@ make test              # Run tests immediately
 make lint              # Check code style
 make type-check        # Verify type annotations
 
-# Frontend changes  
+# Frontend changes
 npm test              # Run tests immediately
 npm run lint          # Check code style
 npx tsc --noEmit      # Verify TypeScript types
@@ -1303,7 +1303,7 @@ npx tsc --noEmit      # Verify TypeScript types
    # ❌ Bad
    def get_user(id):
        return db.query(User).get(id)
-   
+
    # ✅ Good
    def get_user(id: str) -> Optional[User]:
        return db.query(User).get(id)
@@ -1346,22 +1346,22 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-json
-      
+
   - repo: https://github.com/psf/black
     hooks:
       - id: black
         args: [--line-length=88]
-        
+
   - repo: https://github.com/pycqa/isort
     hooks:
       - id: isort
         args: [--profile=black]
-        
+
   - repo: https://github.com/pycqa/flake8
     hooks:
       - id: flake8
         args: [--max-line-length=88]
-        
+
   - repo: local
     hooks:
       - id: mypy
@@ -1441,7 +1441,7 @@ ignore_missing_imports = true
   # ❌ Bad
   except Exception as e:
       raise CustomError("Failed")
-  
+
   # ✅ Good
   except Exception:
       raise CustomError("Failed")
@@ -1450,7 +1450,7 @@ ignore_missing_imports = true
   ```python
   # ❌ Bad
   if value == True:
-  
+
   # ✅ Good
   if value:
   # For SQLAlchemy
@@ -1462,7 +1462,7 @@ ignore_missing_imports = true
   ```typescript
   // ❌ Bad
   } as any);
-  
+
   // ✅ Good
   } as ReturnType<typeof useStore>);
   ```
@@ -1496,7 +1496,7 @@ AsyncFunc = Callable[..., Awaitable[Any]]
 ```python
 # Always import these at the top of modules
 from typing import (
-    Any, Dict, List, Optional, Union, 
+    Any, Dict, List, Optional, Union,
     Callable, TypeVar, Generic, Tuple,
     Awaitable, cast
 )
@@ -1532,7 +1532,7 @@ from pydantic import field_validator, ValidationInfo
 
 class Settings(BaseSettings):
     DATABASE_URL: Optional[str] = None
-    
+
     @field_validator("DATABASE_URL", mode="before")
     @classmethod
     def build_db_url(cls, v: Optional[str], info: ValidationInfo) -> Any:
@@ -1551,7 +1551,7 @@ query.filter(Model.active == True)  # noqa: E712
 # Model base class
 class Base(DeclarativeBase):
     id: Any  # Avoid type issues
-    
+
     @declared_attr  # type: ignore[misc]
     def __tablename__(cls) -> str:
         return cls.__name__.lower()
@@ -1643,7 +1643,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.11, 3.12]
-    
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
@@ -1692,14 +1692,14 @@ class APIClient:
             headers={"X-API-Key": api_key} if api_key else {},
             timeout=30.0
         )
-        
+
         # Sub-clients
         self.auth = AuthClient(self.client)
         self.users = UsersClient(self.client)
-    
+
     async def __aenter__(self):
         return self
-    
+
     async def __aexit__(self, *args):
         await self.client.aclose()
 ```
@@ -1765,23 +1765,23 @@ class CacheManager:
     def __init__(self, max_size: int = 1000):
         self._storage: Dict[str, CacheEntry] = {}
         self.max_size = max_size
-    
+
     def cached(self, ttl: Optional[int] = None):
         def decorator(func):
             def wrapper(*args, **kwargs):
                 key = self._generate_key(func.__name__, *args, **kwargs)
-                
+
                 # Check cache
                 if cached_value := self.get(key):
                     return cached_value
-                
+
                 # Execute function
                 result = func(*args, **kwargs)
-                
+
                 # Cache result
                 self.set(key, result, ttl)
                 return result
-            
+
             return wrapper
         return decorator
 ```
@@ -1798,10 +1798,10 @@ async def send_email(
     message["Subject"] = subject
     message["From"] = from_email or SMTP_USER
     message["To"] = to
-    
+
     part = MIMEText(html, "html")
     message.attach(part)
-    
+
     async with aiosmtplib.SMTP(
         hostname=SMTP_HOST,
         port=SMTP_PORT,
@@ -1817,7 +1817,7 @@ from prometheus_client import Counter, Histogram, Gauge
 
 # Define metrics
 request_count = Counter(
-    'http_requests_total', 
+    'http_requests_total',
     'Total HTTP requests',
     ['method', 'endpoint', 'status']
 )
