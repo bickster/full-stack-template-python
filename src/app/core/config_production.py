@@ -27,7 +27,9 @@ class ProductionSettings(Settings):  # type: ignore[misc]
     def FRONTEND_URL(self) -> str:
         """Ensure HTTPS for frontend URL."""
         url = str(super().FRONTEND_URL)
-        if url.startswith("http://") and not url.startswith("http://localhost"):
+        if url.startswith("http://") and not url.startswith(
+            "http://localhost"
+        ):
             return url.replace("http://", "https://")
         return str(url)
 

@@ -55,7 +55,9 @@ class TestAppEndpoints:
         )
 
         # Check for CORS headers (should be present even on error responses)
-        assert response.headers.get("access-control-allow-credentials") == "true"
+        assert (
+            response.headers.get("access-control-allow-credentials") == "true"
+        )
 
     async def test_security_headers(self, client: AsyncClient):
         """Test security headers are present."""

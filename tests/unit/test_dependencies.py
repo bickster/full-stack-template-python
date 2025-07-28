@@ -23,7 +23,9 @@ class TestGetCurrentUserToken:
         token = create_access_token(subject=user_id)
 
         # Mock credentials
-        credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
+        credentials = HTTPAuthorizationCredentials(
+            scheme="Bearer", credentials=token
+        )
 
         # Call dependency
         token_payload = await get_current_user_token(credentials)
@@ -55,7 +57,9 @@ class TestGetCurrentUserToken:
             subject=user_id, expires_delta=timedelta(seconds=-1)
         )
 
-        credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
+        credentials = HTTPAuthorizationCredentials(
+            scheme="Bearer", credentials=token
+        )
 
         # Should raise AuthenticationError
         with pytest.raises(AuthenticationError):

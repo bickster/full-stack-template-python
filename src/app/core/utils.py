@@ -48,7 +48,8 @@ def validate_username(username: str) -> tuple[bool, Optional[str]]:
     if not re.match(r"^[a-zA-Z0-9_-]+$", username):
         return (
             False,
-            "Username can only contain letters, numbers, underscores, " "and hyphens",
+            "Username can only contain letters, numbers, underscores, "
+            "and hyphens",
         )
 
     return True, None

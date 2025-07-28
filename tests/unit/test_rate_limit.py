@@ -63,12 +63,16 @@ class TestLoginRateLimiter:
         mock_result.scalar.return_value = 15
 
         # Mock the second query for oldest attempt time
-        oldest_attempt_time = datetime.now(timezone.utc) - timedelta(minutes=10)
+        oldest_attempt_time = datetime.now(timezone.utc) - timedelta(
+            minutes=10
+        )
         mock_oldest_result = Mock()
         mock_oldest_result.scalar.return_value = oldest_attempt_time
 
         # Set up execute to return different results for each call
-        mock_db.execute = AsyncMock(side_effect=[mock_result, mock_oldest_result])
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_result, mock_oldest_result]
+        )
 
         result = await limiter.check_login_rate_limit(
             mock_db, "test@example.com", "127.0.0.1"
@@ -96,7 +100,9 @@ class TestLoginRateLimiter:
         mock_oldest_result.scalar.return_value = oldest_attempt_time
 
         # Set up execute to return different results for each call
-        mock_db.execute = AsyncMock(side_effect=[mock_result, mock_oldest_result])
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_result, mock_oldest_result]
+        )
 
         result = await limiter.check_login_rate_limit(
             mock_db, "test@example.com", "127.0.0.1"

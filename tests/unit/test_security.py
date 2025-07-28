@@ -81,7 +81,9 @@ class TestTokenCreation:
 
         exp_time = datetime.fromtimestamp(payload["exp"])
         iat_time = datetime.fromtimestamp(payload["iat"])
-        assert (exp_time - iat_time).total_seconds() == pytest.approx(3600, rel=1)
+        assert (exp_time - iat_time).total_seconds() == pytest.approx(
+            3600, rel=1
+        )
 
     def test_create_refresh_token(self):
         """Test refresh token creation."""
@@ -108,7 +110,9 @@ class TestTokenCreation:
         """Test refresh token creation with custom expiry."""
         subject = "test-user-id"
         custom_delta = timedelta(days=7)
-        token = create_refresh_token(subject=subject, expires_delta=custom_delta)
+        token = create_refresh_token(
+            subject=subject, expires_delta=custom_delta
+        )
 
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
@@ -160,7 +164,9 @@ class TestTokenDecoding:
             "sub": subject,
             "exp": datetime.now(timezone.utc) + timedelta(minutes=15),
         }
-        token = jwt.encode(to_encode, "wrong-secret", algorithm=settings.ALGORITHM)
+        token = jwt.encode(
+            to_encode, "wrong-secret", algorithm=settings.ALGORITHM
+        )
 
         with pytest.raises(ValueError, match="Invalid token"):
             decode_token(token)

@@ -153,7 +153,9 @@ class TestUserEndpoints:
 
         assert response.status_code == 400
         data = response.json()
-        assert data["error"] == ("New password must be different from current password")
+        assert data["error"] == (
+            "New password must be different from current password"
+        )
         assert data["code"] == "SAME_PASSWORD"
 
     async def test_delete_account_success(

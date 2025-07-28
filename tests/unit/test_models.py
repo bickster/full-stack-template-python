@@ -10,7 +10,9 @@ class TestUserModel:
 
     def test_user_repr(self):
         """Test User string representation."""
-        user = User(id="user-123", email="test@example.com", username="testuser")
+        user = User(
+            id="user-123", email="test@example.com", username="testuser"
+        )
         assert repr(user) == "<User testuser>"
 
     def test_user_is_deleted(self):
@@ -83,13 +85,17 @@ class TestLoginAttemptModel:
 
     def test_login_attempt_repr(self):
         """Test LoginAttempt string representation."""
-        attempt = LoginAttempt(id="attempt-123", email="test@example.com", success=True)
+        attempt = LoginAttempt(
+            id="attempt-123", email="test@example.com", success=True
+        )
         assert repr(attempt) == "<LoginAttempt test@example.com - Success>"
 
         failed_attempt = LoginAttempt(
             id="attempt-123", email="test@example.com", success=False
         )
-        assert repr(failed_attempt) == ("<LoginAttempt test@example.com - Failed>")
+        assert repr(failed_attempt) == (
+            "<LoginAttempt test@example.com - Failed>"
+        )
 
 
 class TestAuditLogModel:
