@@ -63,7 +63,7 @@ jobs:
 
       - name: Run tests with coverage
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/test_db
           SECRET_KEY: test-secret-key
           TESTING: 1
           PYTHONPATH: ./src
