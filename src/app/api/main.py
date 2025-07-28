@@ -59,9 +59,7 @@ app.add_middleware(LoggingMiddleware)
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            str(origin) for origin in settings.BACKEND_CORS_ORIGINS
-        ],
+        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -76,9 +74,7 @@ app.add_middleware(
 
 # Security headers middleware
 @app.middleware("http")
-async def security_headers_middleware(
-    request: Request, call_next: Any
-) -> Response:
+async def security_headers_middleware(request: Request, call_next: Any) -> Response:
     """Add security headers to all responses."""
     response = await call_next(request)
 
@@ -100,9 +96,7 @@ async def security_headers_middleware(
 
 # Exception handlers
 @app.exception_handler(AppException)
-async def app_exception_handler(
-    request: Request, exc: AppException
-) -> JSONResponse:
+async def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
     """Handle application exceptions."""
     logger.error(
         "app_exception",
@@ -168,9 +162,7 @@ async def http_exception_handler(
 
 
 @app.exception_handler(Exception)
-async def general_exception_handler(
-    request: Request, exc: Exception
-) -> JSONResponse:
+async def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Handle general exceptions."""
     logger.error(
         "unhandled_exception",

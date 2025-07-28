@@ -101,9 +101,7 @@ class LoginRateLimiter:
 
             oldest_attempt = oldest_result.scalar()
             if oldest_attempt:
-                retry_after = oldest_attempt + timedelta(
-                    minutes=self.window_minutes
-                )
+                retry_after = oldest_attempt + timedelta(minutes=self.window_minutes)
                 return False, 0, retry_after
 
             return False, 0, None

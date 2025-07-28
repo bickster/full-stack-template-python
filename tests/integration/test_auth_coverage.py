@@ -39,9 +39,7 @@ class TestAuthEndpointsCoverage:
         assert "email" in response.text.lower()
 
     @pytest.mark.asyncio
-    async def test_login_with_email(
-        self, client: AsyncClient, test_user: User
-    ):
+    async def test_login_with_email(self, client: AsyncClient, test_user: User):
         """Test login using email."""
         response = await client.post(
             "/api/v1/auth/login",

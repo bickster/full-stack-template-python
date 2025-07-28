@@ -15,11 +15,7 @@ from app.api.schemas import (
     UserResponse,
     UserUpdate,
 )
-from app.core.exceptions import (
-    AuthenticationError,
-    ConflictError,
-    ValidationError,
-)
+from app.core.exceptions import AuthenticationError, ConflictError, ValidationError
 from app.core.logging import logger
 from app.core.security import get_password_hash, verify_password
 from app.db.models.user import User
@@ -72,10 +68,7 @@ async def update_current_user(
         current_user.is_verified = False
 
     # Check if username is being updated and already exists
-    if (
-        "username" in update_data
-        and update_data["username"] != current_user.username
-    ):
+    if "username" in update_data and update_data["username"] != current_user.username:
         result = await db.execute(
             select(User).where(
                 User.username == update_data["username"],
@@ -132,9 +125,7 @@ async def change_password(
         )
 
     # Update password
-    current_user.hashed_password = get_password_hash(
-        password_data.new_password
-    )
+    current_user.hashed_password = get_password_hash(password_data.new_password)
     current_user.updated_at = datetime.now(timezone.utc)
 
     await db.commit()

@@ -85,14 +85,10 @@ class VersioningMiddleware(BaseHTTPMiddleware):
             deprecation = self.DEPRECATED_ENDPOINTS[path]
 
             response.headers["X-API-Deprecated"] = "true"
-            response.headers["X-API-Deprecation-Date"] = deprecation[
-                "deprecated_date"
-            ]
+            response.headers["X-API-Deprecation-Date"] = deprecation["deprecated_date"]
             response.headers["X-API-Sunset-Date"] = deprecation["sunset_date"]
             response.headers["X-API-Alternative"] = deprecation["alternative"]
-            response.headers["X-API-Migration-Guide"] = deprecation[
-                "migration_guide"
-            ]
+            response.headers["X-API-Migration-Guide"] = deprecation["migration_guide"]
 
             # Log deprecation usage
             logger.warning(
@@ -112,9 +108,7 @@ class VersioningMiddleware(BaseHTTPMiddleware):
 
 def get_api_version(request: Request) -> str:
     """Get API version from request state."""
-    return getattr(
-        request.state, "api_version", VersioningMiddleware.DEFAULT_VERSION
-    )
+    return getattr(request.state, "api_version", VersioningMiddleware.DEFAULT_VERSION)
 
 
 def version_greater_equal(version: str, target: str) -> bool:
