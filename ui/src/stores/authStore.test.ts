@@ -54,16 +54,23 @@ describe("authStore", () => {
     });
   });
 
+  // Helper to create mock Axios responses
+  const createMockResponse = <T>(data: T) => ({
+    data,
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config: {} as any,
+  });
+
   describe("login", () => {
     it("should login successfully", async () => {
-      const loginResponse = {
-        data: {
-          user: mockUser,
-          access_token: mockTokens.access_token,
-          refresh_token: mockTokens.refresh_token,
-          expires_in: 900,
-        },
-      };
+      const loginResponse = createMockResponse({
+        user: mockUser,
+        access_token: mockTokens.access_token,
+        refresh_token: mockTokens.refresh_token,
+        expires_in: 900,
+      });
 
       vi.mocked(authApi.login).mockResolvedValue(loginResponse);
 
@@ -125,7 +132,7 @@ describe("authStore", () => {
 
   describe("register", () => {
     it("should register successfully", async () => {
-      vi.mocked(authApi.register).mockResolvedValue({ data: {} });
+      vi.mocked(authApi.register).mockResolvedValue(createMockResponse({}));
 
       const { result } = renderHook(() => useAuthStore());
 
@@ -148,7 +155,7 @@ describe("authStore", () => {
 
   describe("logout", () => {
     it("should logout successfully", async () => {
-      vi.mocked(authApi.logout).mockResolvedValue({ data: {} });
+      vi.mocked(authApi.logout).mockResolvedValue(createMockResponse({}));
 
       const { result } = renderHook(() => useAuthStore());
 
@@ -174,7 +181,7 @@ describe("authStore", () => {
   describe("updateUser", () => {
     it("should update user successfully", async () => {
       const updatedUser = { ...mockUser, email: "updated@example.com" };
-      vi.mocked(usersApi.updateMe).mockResolvedValue({ data: updatedUser });
+      vi.mocked(usersApi.updateMe).mockResolvedValue(createMockResponse(updatedUser));
 
       const { result } = renderHook(() => useAuthStore());
 
@@ -197,7 +204,7 @@ describe("authStore", () => {
 
   describe("changePassword", () => {
     it("should change password successfully", async () => {
-      vi.mocked(usersApi.changePassword).mockResolvedValue({ data: {} });
+      vi.mocked(usersApi.changePassword).mockResolvedValue(createMockResponse({}));
 
       const { result } = renderHook(() => useAuthStore());
 
@@ -217,7 +224,7 @@ describe("authStore", () => {
 
   describe("deleteAccount", () => {
     it("should delete account successfully", async () => {
-      vi.mocked(usersApi.deleteMe).mockResolvedValue({ data: {} });
+      vi.mocked(usersApi.deleteMe).mockResolvedValue(createMockResponse({}));
 
       const { result } = renderHook(() => useAuthStore());
 
